@@ -7,157 +7,324 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <!-- Logo/Title -->
+    <!-- 顶部留白，让整体布局更居中 -->
+    <View
+        android:id="@+id/topSpacer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.18"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Logo/Title - 更大的标题，谷歌风格 -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="32sp"
+        android:text="Browser"
+        android:textSize="48sp"
         android:textStyle="bold"
         android:textColor="@color/primary_color"
-        app:layout_constraintBottom_toTopOf="@+id/searchContainer"
+        android:letterSpacing="0.02"
+        app:layout_constraintTop_toBottomOf="@id/topSpacer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Search Container -->
+    <!-- 搜索框容器 - 谷歌风格的大圆角搜索框 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/searchContainer"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="32dp"
         app:cardCornerRadius="28dp"
-        app:cardElevation="4dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="8dp">
 
-            <!-- Search Engine Selector -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+            <!-- 搜索引擎图标按钮 -->
+            <ImageButton
+                android:id="@+id/btnEngineIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_search"
+                android:contentDescription="选择搜索引擎"
+                android:padding="8dp"
+                android:scaleType="fitCenter" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="搜索引擎:"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray"
-                    android:layout_marginEnd="8dp" />
-
-                <Spinner
-                    android:id="@+id/spinnerSearchEngine"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:spinnerMode="dropdown" />
-            </LinearLayout>
-
-            <!-- Search Input -->
+            <!-- 搜索输入框 - 无边框，更简洁 -->
             <EditText
                 android:id="@+id/etSearch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@null"
-                android:hint="请输入搜索内容..."
+                android:hint="搜索或输入网址"
                 android:inputType="text"
                 android:maxLines="1"
-                android:padding="12dp"
-                android:textSize="16sp" />
-
-            <!-- Search Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSearch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:padding="12dp"
-                android:text="搜索"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:textSize="16sp"
-                app:cornerRadius="24dp" />
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray" />
+
+            <!-- 语音搜索按钮 -->
+            <ImageButton
+                android:id="@+id/btnVoiceSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_mic"
+                android:contentDescription="语音搜索"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <!-- 搜索按钮 -->
+            <ImageButton
+                android:id="@+id/btnSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_forward"
+                android:contentDescription="搜索"
+                android:padding="8dp"
+                android:scaleType="fitCenter" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Quick Access Icons -->
-    <TextView
-        android:id="@+id/tvQuickAccess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="快捷访问"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchContainer" />
-
+    <!-- 搜索引擎选择器 - 放在搜索框下方，更简洁 -->
     <LinearLayout
+        android:id="@+id/engineSelector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvQuickAccess">
+        app:layout_constraintTop_toBottomOf="@+id/searchContainer">
 
-        <ImageButton
-            android:id="@+id/btnBaidu"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/circle_background"
-            android:contentDescription="百度"
-            android:src="@drawable/ic_baidu"
-            android:scaleType="fitCenter"
-            android:padding="12dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索引擎: "
+            android:textSize="13sp"
+            android:textColor="@color/gray" />
 
-        <ImageButton
-            android:id="@+id/btnSogou"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/circle_background"
-            android:contentDescription="搜狗"
-            android:src="@drawable/ic_sogou"
-            android:scaleType="fitCenter"
-            android:padding="12dp" />
+        <Spinner
+            android:id="@+id/spinnerSearchEngine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"
+            android:popupBackground="@drawable/spinner_dropdown_background" />
 
-        <ImageButton
-            android:id="@+id/btnBing"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/circle_background"
-            android:contentDescription="必应"
-            android:src="@drawable/ic_bing"
-            android:scaleType="fitCenter"
-            android:padding="12dp" />
+    </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnDouyin"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/circle_background"
-            android:contentDescription="抖音"
-            android:src="@drawable/ic_douyin"
-            android:scaleType="fitCenter"
-            android:padding="12dp" />
+    <!-- 快捷访问区域 - 更紧凑的布局 -->
+    <LinearLayout
+        android:id="@+id/quickAccessContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/engineSelector">
+
+        <!-- 快捷访问标题 -->
+        <TextView
+            android:id="@+id/tvQuickAccess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="快捷访问"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 快捷访问图标 - 网格布局，更大的间距 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- 百度 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardBaidu"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+
+                    <ImageButton
+                        android:id="@+id/btnBaidu"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_baidu"
+                        android:contentDescription="百度"
+                        android:padding="16dp"
+                        android:scaleType="fitCenter" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="百度"
+                    android:textSize="12sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+            <!-- 搜狗 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardSogou"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+
+                    <ImageButton
+                        android:id="@+id/btnSogou"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_sogou"
+                        android:contentDescription="搜狗"
+                        android:padding="16dp"
+                        android:scaleType="fitCenter" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="搜狗"
+                    android:textSize="12sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+            <!-- 必应 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardBing"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+
+                    <ImageButton
+                        android:id="@+id/btnBing"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_bing"
+                        android:contentDescription="必应"
+                        android:padding="16dp"
+                        android:scaleType="fitCenter" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="必应"
+                    android:textSize="12sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+            <!-- 抖音 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardDouyin"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+
+                    <ImageButton
+                        android:id="@+id/btnDouyin"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_douyin"
+                        android:contentDescription="抖音"
+                        android:padding="16dp"
+                        android:scaleType="fitCenter" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="抖音"
+                    android:textSize="12sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

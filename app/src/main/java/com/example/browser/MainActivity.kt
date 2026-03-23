@@ -3,9 +3,9 @@ package com.example.browser
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.browser.databinding.ActivityMainBinding
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupSearchEngineSpinner()
-        setupSearchButton()
+        setupSearchInput()
         setupQuickAccessButtons()
     }
 
@@ -43,24 +43,49 @@ class MainActivity : AppCompatActivity() {
         binding.spinnerSearchEngine.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 currentSearchEngine = engines[position]
+                updateEngineIcon()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
-    private fun setupSearchButton() {
+    private fun updateEngineIcon() {
+        // 根据选择的搜索引擎更新图标
+        val iconRes = when (currentSearchEngine) {
+            "百度" -> R.drawable.ic_baidu
+            "搜狗" -> R.drawable.ic_sogou
+            "必应" -> R.drawable.ic_bing
+            "抖音" -> R.drawable.ic_douyin
+            else -> R.drawable.ic_search
+        }
+        binding.btnEngineIcon.setImageResource(iconRes)
+    }
+
+    private fun setupSearchInput() {
+        // 搜索按钮点击
         binding.btnSearch.setOnClickListener {
             performSearch()
         }
 
-        // 监听键盘搜索按钮
+        // 搜索引擎图标点击 - 显示下拉菜单
+        binding.btnEngineIcon.setOnClickListener {
+            binding.spinnerSearchEngine.performClick()
+        }
+
+        // 键盘搜索按钮
         binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 performSearch()
                 return@setOnEditorActionListener true
             }
             false
+        }
+
+        // 输入框点击聚焦
+        binding.etSearch.setOnClickListener {
+            binding.etSearch.isFocusableInTouchMode = true
+            binding.etSearch.requestFocus()
         }
     }
 
@@ -71,8 +96,22 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val searchUrl = buildSearchUrl(query)
-        openBrowser(searchUrl)
+        // 检查是否是网址
+        val url = if (isUrl(query)) {
+            if (query.startsWith("http://") || query.startsWith("https://")) {
+                query
+            } else {
+                "https://$query"
+            }
+        } else {
+            buildSearchUrl(query)
+        }
+
+        openBrowser(url)
+    }
+
+    private fun isUrl(query: String): Boolean {
+        return query.contains(".") && !query.contains(" ")
     }
 
     private fun buildSearchUrl(query: String): String {
