@@ -110,13 +110,15 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingEnd="8dp"
+        android:weightSum="5">
 
         <!-- 返回 -->
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back"
             android:padding="12dp"
@@ -126,8 +128,9 @@
         <!-- 前进 -->
         <ImageButton
             android:id="@+id/btnForward"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_forward"
             android:padding="12dp"
@@ -137,47 +140,33 @@
         <!-- 主页 -->
         <ImageButton
             android:id="@+id/btnHome"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_home"
             android:padding="12dp"
             android:scaleType="fitCenter"
             android:contentDescription="主页" />
 
-        <!-- 标签页 -->
-        <FrameLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp">
-
-            <ImageButton
-                android:id="@+id/btnTabs"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_tabs"
-                android:padding="12dp"
-                android:scaleType="fitCenter"
-                android:contentDescription="标签页" />
-
-        </FrameLayout>
-
-        <!-- 收藏 -->
+        <!-- 多窗口 -->
         <ImageButton
-            android:id="@+id/btnFavorite"
-            android:layout_width="48dp"
+            android:id="@+id/btnTabs"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_favorites"
+            android:src="@drawable/ic_tabs"
             android:padding="12dp"
             android:scaleType="fitCenter"
-            android:contentDescription="收藏" />
+            android:contentDescription="多窗口" />
 
         <!-- 菜单 -->
         <ImageButton
             android:id="@+id/btnMenu"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_menu"
             android:padding="12dp"

@@ -170,7 +170,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                         tabManager.updateTab(tab.id, title = it)
                     }
                     url?.let {
-                        updateFavoriteIcon(it)
                         // Add to history
                         if (it.startsWith("http")) {
                             historyManager.addHistory(
@@ -282,7 +281,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         // 更新地址栏
         if (tab.url.isNotEmpty()) {
             binding.etUrl.setText(tab.url)
-            updateFavoriteIcon(tab.url)
         }
         
         // 更新标签计数
@@ -324,11 +322,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         // 多窗口/标签页按钮
         binding.btnTabs.setOnClickListener {
             showTabsDialog()
-        }
-        
-        // 收藏按钮
-        binding.btnFavorite.setOnClickListener {
-            toggleFavorite()
         }
         
         // 菜单按钮
@@ -448,19 +441,8 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     )
                     Toast.makeText(this, "已添加到收藏", Toast.LENGTH_SHORT).show()
                 }
-                updateFavoriteIcon(tab.url)
             }
         }
-    }
-    
-    private fun updateFavoriteIcon(url: String) {
-        val isFavorite = favoriteManager.isFavorite(url)
-        val iconRes = if (isFavorite) {
-            R.drawable.ic_favorite_filled
-        } else {
-            R.drawable.ic_favorites
-        }
-        binding.btnFavorite.setImageResource(iconRes)
     }
     
     private fun removeTab(tabId: String) {
