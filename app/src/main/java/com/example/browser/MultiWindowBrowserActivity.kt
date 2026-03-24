@@ -28,6 +28,7 @@ import com.example.browser.data.Tab
 import com.example.browser.data.TabManager
 import com.example.browser.data.FavoriteManager
 import com.example.browser.data.HistoryManager
+import com.example.browser.data.SearchEngineManager
 import com.example.browser.databinding.ActivityMultiWindowBrowserBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.net.URL
@@ -38,21 +39,9 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     private lateinit var tabManager: TabManager
     private lateinit var favoriteManager: FavoriteManager
     private lateinit var historyManager: HistoryManager
+    private lateinit var searchEngineManager: SearchEngineManager
     private val webViews = mutableMapOf<String, WebView>()
-    
-    private val searchEngines = mapOf(
-        "百度" to "https://www.baidu.com/s?wd=",
-        "搜狗" to "https://www.sogou.com/web?query=",
-        "必应" to "https://www.bing.com/search?q=",
-        "抖音" to "https://www.douyin.com/search/",
-        "哔哩哔哩" to "https://search.bilibili.com/all?keyword=",
-        "知乎" to "https://www.zhihu.com/search?q=",
-        "优酷" to "https://www.youku.com/search?q=",
-        "爱奇艺" to "https://so.iqiyi.com/so/q_",
-        "腾讯视频" to "https://v.qq.com/x/search/?q=",
-        "豆包" to "https://www.doubao.com/",
-        "千问" to "https://tongyi.aliyun.com/qianwen/"
-    )
+    private var currentSearchEngine: String = "百度"
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +51,8 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         tabManager = TabManager(this)
         favoriteManager = FavoriteManager(this)
         historyManager = HistoryManager(this)
+        searchEngineManager = SearchEngineManager(this)
+        currentSearchEngine = searchEngineManager.getDefaultEngine()
         
         initToolbar()
         initWebViewContainer()
@@ -132,6 +123,12 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             performHomeSearch()
         }
         
+        // 搜索引擎选择
+        binding.ivSearchEngine.setOnClickListener {
+            showSearchEngineSelector()
+        }
+        updateSearchEngineIcon()
+        
         // 快捷访问
         binding.quickBaidu.setOnClickListener { openQuickAccess("https://www.baidu.com") }
         binding.quickSogou.setOnClickListener { openQuickAccess("https://www.sogou.com") }
@@ -146,6 +143,40 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         binding.quickQianwen.setOnClickListener { openQuickAccess("https://tongyi.aliyun.com/qianwen") }
     }
     
+    private fun showSearchEngineSelector() {
+        val engines = searchEngineManager.getEngineList().toTypedArray()
+        val currentIndex = engines.indexOf(currentSearchEngine)
+        
+        AlertDialog.Builder(this)
+            .setTitle("选择搜索引擎")
+            .setSingleChoiceItems(engines, currentIndex) { dialog, which ->
+                currentSearchEngine = engines[which]
+                searchEngineManager.setDefaultEngine(currentSearchEngine)
+                updateSearchEngineIcon()
+                dialog.dismiss()
+            }
+            .setNegativeButton("取消", null)
+            .show()
+    }
+    
+    private fun updateSearchEngineIcon() {
+        val iconRes = when (currentSearchEngine) {
+            "百度" -> R.drawable.ic_baidu
+            "搜狗" -> R.drawable.ic_sogou
+            "必应" -> R.drawable.ic_bing
+            "抖音" -> R.drawable.ic_douyin
+            "哔哩哔哩" -> R.drawable.ic_bilibili
+            "知乎" -> R.drawable.ic_zhihu
+            "优酷" -> R.drawable.ic_youku
+            "爱奇艺" -> R.drawable.ic_iqiyi
+            "腾讯视频" -> R.drawable.ic_tencent
+            "豆包" -> R.drawable.ic_doubao
+            "千问" -> R.drawable.ic_qianwen
+            else -> R.drawable.ic_search
+        }
+        binding.ivSearchEngine.setImageResource(iconRes)
+    }
+    
     private fun performHomeSearch() {
         val query = binding.etHomeSearch.text.toString().trim()
         if (query.isEmpty()) return
@@ -158,7 +189,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         val url = if (isUrl(query)) {
             if (query.startsWith("http://") || query.startsWith("https://")) query else "https://$query"
         } else {
-            searchEngines["百度"] + java.net.URLEncoder.encode(query, "UTF-8")
+            searchEngineManager.getSearchUrl(currentSearchEngine) + java.net.URLEncoder.encode(query, "UTF-8")
         }
         
         binding.etHomeSearch.text.clear()

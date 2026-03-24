@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.browser.data.FavoriteManager
 import com.example.browser.data.HistoryManager
+import com.example.browser.data.SearchEngineManager
 import com.example.browser.databinding.ActivitySettingsBinding
 import java.io.File
 
@@ -15,6 +16,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var historyManager: HistoryManager
     private lateinit var favoriteManager: FavoriteManager
+    private lateinit var searchEngineManager: SearchEngineManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +25,7 @@ class SettingsActivity : AppCompatActivity() {
 
         historyManager = HistoryManager(this)
         favoriteManager = FavoriteManager(this)
+        searchEngineManager = SearchEngineManager(this)
 
         setupToolbar()
         updateStats()
@@ -39,6 +42,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.tvCacheSize.text = getCacheSize()
         binding.tvHistoryCount.text = "${historyManager.getHistoryCount()} 条记录"
         binding.tvFavoritesCount.text = "${favoriteManager.getFavoriteCount()} 条收藏"
+        binding.tvSearchEngine.text = searchEngineManager.getDefaultEngine()
     }
 
     private fun getCacheSize(): String {
@@ -128,6 +132,22 @@ class SettingsActivity : AppCompatActivity() {
                 .setTitle("关于 Noir")
                 .setMessage("Noir 浏览器\n版本: 1.0\n\n一款简洁、快速的Android浏览器")
                 .setPositiveButton("确定", null)
+                .show()
+        }
+        
+        binding.btnSearchEngine.setOnClickListener {
+            val engines = searchEngineManager.getEngineList().toTypedArray()
+            val currentEngine = searchEngineManager.getDefaultEngine()
+            val currentIndex = engines.indexOf(currentEngine)
+            
+            AlertDialog.Builder(this)
+                .setTitle("选择默认搜索引擎")
+                .setSingleChoiceItems(engines, currentIndex) { dialog, which ->
+                    searchEngineManager.setDefaultEngine(engines[which])
+                    binding.tvSearchEngine.text = engines[which]
+                    dialog.dismiss()
+                }
+                .setNegativeButton("取消", null)
                 .show()
         }
     }

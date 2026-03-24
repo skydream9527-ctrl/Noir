@@ -136,14 +136,20 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="20dp"
+                android:paddingStart="12dp"
                 android:paddingEnd="8dp">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_search"
-                    android:tint="@color/gray" />
+                    android:id="@+id/ivSearchEngine"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_baidu"
+                    android:padding="4dp"
+                    android:scaleType="fitCenter"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="选择搜索引擎" />
 
                 <EditText
                     android:id="@+id/etHomeSearch"
@@ -154,7 +160,7 @@
                     android:hint="搜索或输入网址"
                     android:inputType="text"
                     android:maxLines="1"
-                    android:paddingStart="12dp"
+                    android:paddingStart="8dp"
                     android:paddingEnd="12dp"
                     android:textSize="16sp"
                     android:textColor="@color/black"
