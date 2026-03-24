@@ -104,27 +104,36 @@
         android:id="@+id/webViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="56dp"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- 首页视图 -->
-    <LinearLayout
+    <ScrollView
         android:id="@+id/homeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
+        android:fillViewport="true"
         android:background="@color/white"
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Logo/Title -->
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Noir"
-            android:textSize="48sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_color" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingBottom="56dp">
+
+            <!-- Logo/Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Noir"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_color" />
 
         <!-- 搜索框 -->
         <androidx.cardview.widget.CardView
@@ -627,7 +636,7 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
     <!-- 底部工具栏 -->
     <LinearLayout

@@ -20,8 +20,8 @@ class SearchEngineManager(context: Context) {
             "优酷" to "https://www.youku.com/search?q=",
             "爱奇艺" to "https://so.iqiyi.com/so/q_",
             "腾讯视频" to "https://v.qq.com/x/search/?q=",
-            "豆包" to "https://www.doubao.com/",
-            "千问" to "https://tongyi.aliyun.com/qianwen/"
+            "豆包" to "https://www.doubao.com/chat/?q=",
+            "千问" to "https://tongyi.aliyun.com/qianwen/?q="
         )
     }
     

@@ -115,11 +115,7 @@ class SettingsActivity : AppCompatActivity() {
                 .setTitle("清除收藏")
                 .setMessage("确定要清除所有收藏吗？")
                 .setPositiveButton("确定") { _, _ ->
-                    while (favoriteManager.getFavoriteCount() > 0) {
-                        favoriteManager.getAllFavorites().forEach {
-                            favoriteManager.removeFavorite(it.id)
-                        }
-                    }
+                    favoriteManager.clearAllFavorites()
                     updateStats()
                     Toast.makeText(this, "收藏已清除", Toast.LENGTH_SHORT).show()
                 }

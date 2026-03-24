@@ -8,19 +8,13 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.browser.data.SearchEngineManager
 import com.example.browser.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    
-    // 搜索引擎URL模板
-    private val searchEngines = mapOf(
-        "百度" to "https://www.baidu.com/s?wd=",
-        "搜狗" to "https://www.sogou.com/web?query=",
-        "必应" to "https://www.bing.com/search?q=",
-        "抖音" to "https://www.douyin.com/search/"
-    )
+    private lateinit var searchEngineManager: SearchEngineManager
     
     private var currentSearchEngine = "百度"
 
@@ -29,6 +23,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        searchEngineManager = SearchEngineManager(this)
+        currentSearchEngine = searchEngineManager.getDefaultEngine()
+
         setupSearchEngineSpinner()
         setupSearchInput()
         setupQuickAccessButtons()
@@ -36,14 +33,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSearchEngineSpinner() {
-        val engines = listOf("百度", "搜狗", "必应", "抖音")
+        val engines = searchEngineManager.getEngineList()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, engines)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerSearchEngine.adapter = adapter
+        
+        val currentIndex = engines.indexOf(currentSearchEngine)
+        if (currentIndex >= 0) {
+            binding.spinnerSearchEngine.setSelection(currentIndex)
+        }
 
         binding.spinnerSearchEngine.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 currentSearchEngine = engines[position]
+                searchEngineManager.setDefaultEngine(currentSearchEngine)
                 updateEngineIcon()
             }
 
@@ -52,12 +55,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateEngineIcon() {
-        // 根据选择的搜索引擎更新图标
         val iconRes = when (currentSearchEngine) {
             "百度" -> R.drawable.ic_baidu
             "搜狗" -> R.drawable.ic_sogou
             "必应" -> R.drawable.ic_bing
             "抖音" -> R.drawable.ic_douyin
+            "哔哩哔哩" -> R.drawable.ic_bilibili
+            "知乎" -> R.drawable.ic_zhihu
+            "优酷" -> R.drawable.ic_youku
+            "爱奇艺" -> R.drawable.ic_iqiyi
+            "腾讯视频" -> R.drawable.ic_tencent
+            "豆包" -> R.drawable.ic_doubao
+            "千问" -> R.drawable.ic_qianwen
             else -> R.drawable.ic_search
         }
         binding.btnEngineIcon.setImageResource(iconRes)
@@ -116,8 +125,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buildSearchUrl(query: String): String {
-        val baseUrl = searchEngines[currentSearchEngine] ?: searchEngines["百度"]!!
-        return baseUrl + java.net.URLEncoder.encode(query, "UTF-8")
+        return searchEngineManager.getSearchUrl(currentSearchEngine) + java.net.URLEncoder.encode(query, "UTF-8")
     }
 
     private fun openBrowser(url: String) {
@@ -129,23 +137,58 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupQuickAccessButtons() {
         // 百度快捷访问
-        binding.btnBaidu.setOnClickListener {
+        binding.quickBaidu.setOnClickListener {
             openQuickAccess("百度", "https://www.baidu.com")
         }
 
         // 搜狗快捷访问
-        binding.btnSogou.setOnClickListener {
+        binding.quickSogou.setOnClickListener {
             openQuickAccess("搜狗", "https://www.sogou.com")
         }
 
         // 必应快捷访问
-        binding.btnBing.setOnClickListener {
+        binding.quickBing.setOnClickListener {
             openQuickAccess("必应", "https://www.bing.com")
         }
 
         // 抖音快捷访问
-        binding.btnDouyin.setOnClickListener {
+        binding.quickDouyin.setOnClickListener {
             openQuickAccess("抖音", "https://www.douyin.com")
+        }
+
+        // 哔哩哔哩快捷访问
+        binding.quickBilibili.setOnClickListener {
+            openQuickAccess("哔哩哔哩", "https://www.bilibili.com")
+        }
+
+        // 知乎快捷访问
+        binding.quickZhihu.setOnClickListener {
+            openQuickAccess("知乎", "https://www.zhihu.com")
+        }
+
+        // 优酷快捷访问
+        binding.quickYouku.setOnClickListener {
+            openQuickAccess("优酷", "https://www.youku.com")
+        }
+
+        // 爱奇艺快捷访问
+        binding.quickIqiyi.setOnClickListener {
+            openQuickAccess("爱奇艺", "https://www.iqiyi.com")
+        }
+
+        // 腾讯视频快捷访问
+        binding.quickTencent.setOnClickListener {
+            openQuickAccess("腾讯视频", "https://v.qq.com")
+        }
+
+        // 豆包快捷访问
+        binding.quickDoubao.setOnClickListener {
+            openQuickAccess("豆包", "https://www.doubao.com")
+        }
+
+        // 千问快捷访问
+        binding.quickQianwen.setOnClickListener {
+            openQuickAccess("千问", "https://tongyi.aliyun.com/qianwen")
         }
     }
 
@@ -184,12 +227,14 @@ class MainActivity : AppCompatActivity() {
     private var backPressedTime: Long = 0
 
     private fun openQuickAccess(name: String, url: String) {
-        // 设置当前搜索引擎
         currentSearchEngine = name
-        val position = listOf("百度", "搜狗", "必应", "抖音").indexOf(name)
+        searchEngineManager.setDefaultEngine(name)
+        val engines = searchEngineManager.getEngineList()
+        val position = engines.indexOf(name)
         if (position >= 0) {
             binding.spinnerSearchEngine.setSelection(position)
         }
+        updateEngineIcon()
         
         openBrowser(url)
     }

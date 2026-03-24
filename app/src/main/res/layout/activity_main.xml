@@ -133,30 +133,20 @@
 
     </LinearLayout>
 
-    <!-- 快捷访问区域 - 更紧凑的布局 -->
+    <!-- 快捷访问区域 -->
     <LinearLayout
         android:id="@+id/quickAccessContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="48dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/engineSelector">
 
-        <!-- 快捷访问标题 -->
-        <TextView
-            android:id="@+id/tvQuickAccess"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="快捷访问"
-            android:textSize="14sp"
-            android:textColor="@color/gray"
-            android:layout_marginBottom="16dp" />
-
-        <!-- 快捷访问图标 - 网格布局，更大的间距 -->
+        <!-- 第一行 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -165,163 +155,425 @@
 
             <!-- 百度 -->
             <LinearLayout
+                android:id="@+id/quickBaidu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
-
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardBaidu"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="@color/light_gray"
                     app:cardBackgroundColor="@color/white">
-
-                    <ImageButton
-                        android:id="@+id/btnBaidu"
+                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_baidu"
-                        android:contentDescription="百度"
-                        android:padding="16dp"
+                        android:padding="10dp"
                         android:scaleType="fitCenter" />
-
                 </com.google.android.material.card.MaterialCardView>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="百度"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textColor="@color/gray"
-                    android:layout_marginTop="8dp" />
-
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
             <!-- 搜狗 -->
             <LinearLayout
+                android:id="@+id/quickSogou"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
-
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSogou"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="@color/light_gray"
                     app:cardBackgroundColor="@color/white">
-
-                    <ImageButton
-                        android:id="@+id/btnSogou"
+                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_sogou"
-                        android:contentDescription="搜狗"
-                        android:padding="16dp"
+                        android:padding="10dp"
                         android:scaleType="fitCenter" />
-
                 </com.google.android.material.card.MaterialCardView>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="搜狗"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textColor="@color/gray"
-                    android:layout_marginTop="8dp" />
-
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
             <!-- 必应 -->
             <LinearLayout
+                android:id="@+id/quickBing"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
-
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardBing"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="@color/light_gray"
                     app:cardBackgroundColor="@color/white">
-
-                    <ImageButton
-                        android:id="@+id/btnBing"
+                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_bing"
-                        android:contentDescription="必应"
-                        android:padding="16dp"
+                        android:padding="10dp"
                         android:scaleType="fitCenter" />
-
                 </com.google.android.material.card.MaterialCardView>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="必应"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textColor="@color/gray"
-                    android:layout_marginTop="8dp" />
-
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
             <!-- 抖音 -->
             <LinearLayout
+                android:id="@+id/quickDouyin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
-
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardDouyin"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="@color/light_gray"
                     app:cardBackgroundColor="@color/white">
-
-                    <ImageButton
-                        android:id="@+id/btnDouyin"
+                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_douyin"
-                        android:contentDescription="抖音"
-                        android:padding="16dp"
+                        android:padding="10dp"
                         android:scaleType="fitCenter" />
-
                 </com.google.android.material.card.MaterialCardView>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="抖音"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textColor="@color/gray"
-                    android:layout_marginTop="8dp" />
-
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 第二行 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp">
+
+            <!-- 哔哩哔哩 -->
+            <LinearLayout
+                android:id="@+id/quickBilibili"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_bilibili"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="哔哩哔哩"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 知乎 -->
+            <LinearLayout
+                android:id="@+id/quickZhihu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_zhihu"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="知乎"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 优酷 -->
+            <LinearLayout
+                android:id="@+id/quickYouku"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_youku"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="优酷"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 爱奇艺 -->
+            <LinearLayout
+                android:id="@+id/quickIqiyi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_iqiyi"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="爱奇艺"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 第三行 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp">
+
+            <!-- 腾讯视频 -->
+            <LinearLayout
+                android:id="@+id/quickTencent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_tencent"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="腾讯视频"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 豆包 -->
+            <LinearLayout
+                android:id="@+id/quickDoubao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_doubao"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="豆包"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 千问 -->
+            <LinearLayout
+                android:id="@+id/quickQianwen"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray"
+                    app:cardBackgroundColor="@color/white">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_qianwen"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="千问"
+                    android:textSize="11sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 占位 -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
@@ -439,7 +691,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_menu"
+                android:src="@drawable/ic_profile"
                 android:contentDescription="我的" />
 
             <TextView

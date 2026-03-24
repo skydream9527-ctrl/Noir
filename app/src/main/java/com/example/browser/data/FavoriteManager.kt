@@ -59,6 +59,11 @@ class FavoriteManager(context: Context) {
         }
     }
     
+    fun clearAllFavorites() {
+        favorites.clear()
+        saveFavorites()
+    }
+    
     private fun saveFavorites() {
         val jsonArray = JSONArray()
         favorites.forEach { favorite ->

@@ -49,11 +49,7 @@ class FavoritesActivity : AppCompatActivity() {
                 .setTitle("清空收藏")
                 .setMessage("确定要清空所有收藏吗？")
                 .setPositiveButton("清空") { _, _ ->
-                    while (favoriteManager.getFavoriteCount() > 0) {
-                        favoriteManager.getAllFavorites().forEach {
-                            favoriteManager.removeFavorite(it.id)
-                        }
-                    }
+                    favoriteManager.clearAllFavorites()
                     loadFavorites()
                     Toast.makeText(this, "收藏已清空", Toast.LENGTH_SHORT).show()
                 }

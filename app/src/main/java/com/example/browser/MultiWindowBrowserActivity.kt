@@ -490,13 +490,13 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     "https://$finalUrl"
                 } else {
                     // 作为搜索查询处理
-                    val encodedQuery = java.net.URLEncoder.encode(url, "UTF-8")
+                    val encodedQuery = java.net.URLEncoder.encode(finalUrl, "UTF-8")
                     "https://www.baidu.com/s?wd=$encodedQuery"
                 }
             }
             else -> {
                 // 作为搜索查询处理
-                val encodedQuery = java.net.URLEncoder.encode(url, "UTF-8")
+                val encodedQuery = java.net.URLEncoder.encode(finalUrl, "UTF-8")
                 "https://www.baidu.com/s?wd=$encodedQuery"
             }
         }
