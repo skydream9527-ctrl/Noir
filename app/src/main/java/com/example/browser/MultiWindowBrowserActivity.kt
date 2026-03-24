@@ -199,8 +199,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             settings.loadsImagesAutomatically = true
             settings.javaScriptCanOpenWindowsAutomatically = true
             settings.setSupportMultipleWindows(true)
-            settings.setAppCacheEnabled(true)
-            settings.setAppCachePath(cacheDir.absolutePath)
             settings.userAgentString = settings.userAgentString
             
             // 设置WebView层级
