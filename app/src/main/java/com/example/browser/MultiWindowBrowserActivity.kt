@@ -1,8 +1,11 @@
 package com.example.browser
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -136,6 +139,11 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         val query = binding.etHomeSearch.text.toString().trim()
         if (query.isEmpty()) return
         
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "网络不可用，请检查网络连接", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
         val url = if (isUrl(query)) {
             if (query.startsWith("http://") || query.startsWith("https://")) query else "https://$query"
         } else {
@@ -158,6 +166,14 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         // WebView容器已准备在XML中
     }
     
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+               capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+    
     @SuppressLint("SetJavaScriptEnabled")
     private fun createWebView(tab: Tab): WebView {
         val webView = WebView(this).apply {
@@ -174,13 +190,21 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             settings.useWideViewPort = true
             settings.loadWithOverviewMode = true
             settings.domStorageEnabled = true
+            settings.databaseEnabled = true
             settings.cacheMode = WebSettings.LOAD_DEFAULT
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            // 增加稳定性设置
-            settings.setSupportMultipleWindows(true)
+            settings.allowFileAccess = true
+            settings.allowContentAccess = true
+            settings.blockNetworkImage = false
+            settings.loadsImagesAutomatically = true
             settings.javaScriptCanOpenWindowsAutomatically = true
-            settings.allowFileAccess = false
-            settings.allowContentAccess = false
+            settings.setSupportMultipleWindows(true)
+            settings.setAppCacheEnabled(true)
+            settings.setAppCachePath(cacheDir.absolutePath)
+            settings.userAgentString = settings.userAgentString
+            
+            // 设置WebView层级
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
             
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
@@ -190,13 +214,13 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     val url = request?.url?.toString() ?: return false
                     // 处理特殊协议
                     if (url.startsWith("tel:") || url.startsWith("mailto:") || 
-                        url.startsWith("intent:") || url.startsWith("market:")) {
+                        url.startsWith("intent:") || url.startsWith("market:") ||
+                        url.startsWith("weixin:") || url.startsWith("alipays:")) {
                         try {
                             val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
                             startActivity(intent)
                             return true
                         } catch (e: Exception) {
-                            // 无法处理该协议
                             return false
                         }
                     }
@@ -237,17 +261,36 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     error: WebResourceError?
                 ) {
                     super.onReceivedError(view, request, error)
-                    // 处理加载错误
-                    if (request?.isForMainFrame == true) {
-                        val errorMessage = when (error?.errorCode) {
+                    if (request?.isForMainFrame == true && error != null) {
+                        binding.progressBar.visibility = View.GONE
+                        val errorMessage = when (error.errorCode) {
                             WebViewClient.ERROR_HOST_LOOKUP -> "无法找到服务器，请检查网络连接"
                             WebViewClient.ERROR_CONNECT -> "连接失败，请检查网络"
                             WebViewClient.ERROR_TIMEOUT -> "连接超时，请稍后重试"
                             WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> "SSL握手失败"
                             WebViewClient.ERROR_BAD_URL -> "无效的网址"
-                            else -> "页面加载失败"
+                            WebViewClient.ERROR_TOO_MANY_REQUESTS -> "请求过多，请稍后重试"
+                            WebViewClient.ERROR_UNSUPPORTED_AUTH_SCHEME -> "不支持的认证方式"
+                            WebViewClient.ERROR_AUTHENTICATION -> "认证失败"
+                            WebViewClient.ERROR_PROXY_AUTHENTICATION -> "代理认证失败"
+                            WebViewClient.ERROR_IO -> "网络IO错误"
+                            else -> "页面加载失败，错误码: ${error.errorCode}"
                         }
                         Toast.makeText(this@MultiWindowBrowserActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                
+                override fun onReceivedHttpError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    errorResponse: android.webkit.WebResourceResponse?
+                ) {
+                    super.onReceivedHttpError(view, request, errorResponse)
+                    if (request?.isForMainFrame == true) {
+                        val statusCode = errorResponse?.statusCode ?: 0
+                        if (statusCode >= 400) {
+                            Toast.makeText(this@MultiWindowBrowserActivity, "HTTP错误: $statusCode", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 
@@ -256,17 +299,27 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     handler: SslErrorHandler?,
                     error: SslError?
                 ) {
-                    // 处理SSL错误，给用户选择
-                    AlertDialog.Builder(this@MultiWindowBrowserActivity)
-                        .setTitle("SSL证书错误")
-                        .setMessage("该网站的SSL证书存在问题，是否继续访问？\n错误: ${error?.toString()}")
-                        .setPositiveButton("继续") { _, _ ->
-                            handler?.proceed()
+                    // 对于某些SSL错误，默认继续加载
+                    when (error?.primaryError) {
+                        SslError.SSL_DATE_INVALID,
+                        SslError.SSL_EXPIRED,
+                        SslError.SSL_IDMISMATCH,
+                        SslError.SSL_NOTYETVALID,
+                        SslError.SSL_UNTRUSTED -> {
+                            AlertDialog.Builder(this@MultiWindowBrowserActivity)
+                                .setTitle("SSL证书警告")
+                                .setMessage("该网站的SSL证书存在问题，是否继续访问？")
+                                .setPositiveButton("继续访问") { _, _ ->
+                                    handler?.proceed()
+                                }
+                                .setNegativeButton("取消") { _, _ ->
+                                    handler?.cancel()
+                                }
+                                .setCancelable(false)
+                                .show()
                         }
-                        .setNegativeButton("取消") { _, _ ->
-                            handler?.cancel()
-                        }
-                        .show()
+                        else -> handler?.proceed()
+                    }
                 }
             }
             
@@ -281,6 +334,10 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     title?.let {
                         tabManager.updateTab(tab.id, title = it)
                     }
+                }
+                
+                override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                    return true
                 }
             }
         }
@@ -305,10 +362,26 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         webView.visibility = View.VISIBLE
         
         // 修复URL处理逻辑
-        val finalUrl = when {
-            url.startsWith("http://") || url.startsWith("https://") -> url
-            url.startsWith("www.") -> "https://$url"
-            url.contains(".") && !url.contains(" ") -> "https://$url"
+        var finalUrl = url.trim()
+        
+        // 移除多余空格
+        finalUrl = finalUrl.replace(" ", "")
+        
+        // 处理URL格式
+        finalUrl = when {
+            finalUrl.startsWith("http://") || finalUrl.startsWith("https://") -> finalUrl
+            finalUrl.startsWith("ftp://") -> finalUrl
+            finalUrl.startsWith("www.") -> "https://$finalUrl"
+            finalUrl.contains(".") && finalUrl.indexOf(".") < finalUrl.length - 1 -> {
+                // 检查是否是有效域名
+                if (finalUrl.matches(Regex("^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$"))) {
+                    "https://$finalUrl"
+                } else {
+                    // 作为搜索查询处理
+                    val encodedQuery = java.net.URLEncoder.encode(url, "UTF-8")
+                    "https://www.baidu.com/s?wd=$encodedQuery"
+                }
+            }
             else -> {
                 // 作为搜索查询处理
                 val encodedQuery = java.net.URLEncoder.encode(url, "UTF-8")
@@ -316,9 +389,19 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             }
         }
         
-        webView.loadUrl(finalUrl)
-        tabManager.updateTab(tab.id, url = finalUrl)
-        binding.etUrl.setText(finalUrl)
+        // 添加请求头
+        val headers = mapOf(
+            "Accept-Language" to "zh-CN,zh;q=0.9,en;q=0.8",
+            "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+        )
+        
+        try {
+            webView.loadUrl(finalUrl, headers)
+            tabManager.updateTab(tab.id, url = finalUrl)
+            binding.etUrl.setText(finalUrl)
+        } catch (e: Exception) {
+            Toast.makeText(this, "加载失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
     
     private fun showTab(tab: Tab) {
@@ -354,6 +437,11 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun loadUrl(url: String) {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "网络不可用，请检查网络连接", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
         // 隐藏首页，显示WebView容器
         binding.homeView.visibility = View.GONE
         binding.webViewContainer.visibility = View.VISIBLE
