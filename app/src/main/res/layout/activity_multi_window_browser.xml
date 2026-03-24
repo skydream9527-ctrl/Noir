@@ -40,14 +40,20 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingStart="12dp"
+                        android:paddingStart="8dp"
                         android:paddingEnd="8dp">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_search"
-                            android:tint="#9AA0A6" />
+                            android:id="@+id/ivToolbarSearchEngine"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_baidu"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:contentDescription="选择搜索引擎" />
 
                         <EditText
                             android:id="@+id/etUrl"

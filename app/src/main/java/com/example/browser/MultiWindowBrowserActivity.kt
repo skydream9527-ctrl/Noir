@@ -90,10 +90,25 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         
+        // 地址栏搜索引擎选择
+        binding.ivToolbarSearchEngine.setOnClickListener {
+            showSearchEngineSelector()
+        }
+        updateToolbarSearchEngineIcon()
+        
         // 地址栏
         binding.etUrl.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_GO) {
-                loadUrl(binding.etUrl.text.toString())
+                val query = binding.etUrl.text.toString().trim()
+                if (query.isNotEmpty()) {
+                    val url = if (isUrl(query)) {
+                        if (query.startsWith("http://") || query.startsWith("https://")) query else "https://$query"
+                    } else {
+                        searchEngineManager.getSearchUrl(currentSearchEngine) + java.net.URLEncoder.encode(query, "UTF-8")
+                    }
+                    loadUrl(url)
+                    binding.etUrl.setText(url)
+                }
                 true
             } else {
                 false
@@ -153,6 +168,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 currentSearchEngine = engines[which]
                 searchEngineManager.setDefaultEngine(currentSearchEngine)
                 updateSearchEngineIcon()
+                updateToolbarSearchEngineIcon()
                 dialog.dismiss()
             }
             .setNegativeButton("取消", null)
@@ -160,7 +176,17 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun updateSearchEngineIcon() {
-        val iconRes = when (currentSearchEngine) {
+        val iconRes = getSearchEngineIconRes(currentSearchEngine)
+        binding.ivSearchEngine.setImageResource(iconRes)
+    }
+    
+    private fun updateToolbarSearchEngineIcon() {
+        val iconRes = getSearchEngineIconRes(currentSearchEngine)
+        binding.ivToolbarSearchEngine.setImageResource(iconRes)
+    }
+    
+    private fun getSearchEngineIconRes(engine: String): Int {
+        return when (engine) {
             "百度" -> R.drawable.ic_baidu
             "搜狗" -> R.drawable.ic_sogou
             "必应" -> R.drawable.ic_bing
@@ -174,7 +200,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             "千问" -> R.drawable.ic_qianwen
             else -> R.drawable.ic_search
         }
-        binding.ivSearchEngine.setImageResource(iconRes)
     }
     
     private fun performHomeSearch() {
