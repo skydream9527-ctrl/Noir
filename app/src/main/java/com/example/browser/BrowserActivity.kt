@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import com.tencent.smtt.sdk.WebChromeClient
+import com.tencent.smtt.sdk.WebSettings
+import com.tencent.smtt.sdk.WebView
+import com.tencent.smtt.sdk.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.example.browser.databinding.ActivityBrowserBinding
 
@@ -29,7 +28,6 @@ class BrowserActivity : AppCompatActivity() {
         setupWebView()
         setupFab()
         
-        // 加载传入的URL
         val url = intent.getStringExtra("url")
         if (!url.isNullOrEmpty()) {
             webView.loadUrl(url)
@@ -50,36 +48,23 @@ class BrowserActivity : AppCompatActivity() {
     private fun setupWebView() {
         val settings = webView.settings
         
-        // 启用JavaScript
         settings.javaScriptEnabled = true
-        
-        // 启用缩放
         settings.setSupportZoom(true)
         settings.builtInZoomControls = true
         settings.displayZoomControls = false
-        
-        // 自适应屏幕
         settings.useWideViewPort = true
         settings.loadWithOverviewMode = true
-        
-        // 启用DOM storage
         settings.domStorageEnabled = true
-        
-        // 启用缓存
         settings.cacheMode = WebSettings.LOAD_DEFAULT
-        
-        // 启用混合内容模式（允许HTTPS页面加载HTTP资源）
         settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        
-        // 设置User Agent
         settings.userAgentString = settings.userAgentString + " BrowserApp/1.0"
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
-                request: WebResourceRequest?
+                url: String?
             ): Boolean {
-                return false // 让WebView处理所有URL
+                return false
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {

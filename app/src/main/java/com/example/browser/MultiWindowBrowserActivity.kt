@@ -11,13 +11,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.SslErrorHandler
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler
+import com.tencent.smtt.export.external.interfaces.WebResourceError
+import com.tencent.smtt.export.external.interfaces.WebResourceResponse
+import com.tencent.smtt.sdk.WebChromeClient
+import com.tencent.smtt.sdk.WebSettings
+import com.tencent.smtt.sdk.WebView
+import com.tencent.smtt.sdk.WebViewClient
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -207,10 +207,9 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
-                    request: WebResourceRequest?
+                    url: String?
                 ): Boolean {
-                    val url = request?.url?.toString() ?: return false
-                    // 处理特殊协议
+                    if (url == null) return false
                     if (url.startsWith("tel:") || url.startsWith("mailto:") || 
                         url.startsWith("intent:") || url.startsWith("market:") ||
                         url.startsWith("weixin:") || url.startsWith("alipays:")) {
@@ -243,7 +242,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                         tabManager.updateTab(tab.id, title = it)
                     }
                     url?.let {
-                        // Add to history
                         if (it.startsWith("http")) {
                             historyManager.addHistory(
                                 title = title.ifEmpty { it },
@@ -255,33 +253,32 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 
                 override fun onReceivedError(
                     view: WebView?,
-                    request: WebResourceRequest?,
-                    error: WebResourceError?
+                    errorCode: Int,
+                    description: String?,
+                    failingUrl: String?
                 ) {
-                    super.onReceivedError(view, request, error)
-                    if (request?.isForMainFrame == true && error != null) {
-                        binding.progressBar.visibility = View.GONE
-                        val errorMessage = when (error.errorCode) {
-                            WebViewClient.ERROR_HOST_LOOKUP -> "无法找到服务器，请检查网络连接"
-                            WebViewClient.ERROR_CONNECT -> "连接失败，请检查网络"
-                            WebViewClient.ERROR_TIMEOUT -> "连接超时，请稍后重试"
-                            WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> "SSL握手失败"
-                            WebViewClient.ERROR_BAD_URL -> "无效的网址"
-                            WebViewClient.ERROR_TOO_MANY_REQUESTS -> "请求过多，请稍后重试"
-                            WebViewClient.ERROR_UNSUPPORTED_AUTH_SCHEME -> "不支持的认证方式"
-                            WebViewClient.ERROR_AUTHENTICATION -> "认证失败"
-                            WebViewClient.ERROR_PROXY_AUTHENTICATION -> "代理认证失败"
-                            WebViewClient.ERROR_IO -> "网络IO错误"
-                            else -> "页面加载失败，错误码: ${error.errorCode}"
-                        }
-                        Toast.makeText(this@MultiWindowBrowserActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                    super.onReceivedError(view, errorCode, description, failingUrl)
+                    binding.progressBar.visibility = View.GONE
+                    val errorMessage = when (errorCode) {
+                        WebViewClient.ERROR_HOST_LOOKUP -> "无法找到服务器，请检查网络连接"
+                        WebViewClient.ERROR_CONNECT -> "连接失败，请检查网络"
+                        WebViewClient.ERROR_TIMEOUT -> "连接超时，请稍后重试"
+                        WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> "SSL握手失败"
+                        WebViewClient.ERROR_BAD_URL -> "无效的网址"
+                        WebViewClient.ERROR_TOO_MANY_REQUESTS -> "请求过多，请稍后重试"
+                        WebViewClient.ERROR_UNSUPPORTED_AUTH_SCHEME -> "不支持的认证方式"
+                        WebViewClient.ERROR_AUTHENTICATION -> "认证失败"
+                        WebViewClient.ERROR_PROXY_AUTHENTICATION -> "代理认证失败"
+                        WebViewClient.ERROR_IO -> "网络IO错误"
+                        else -> "页面加载失败，错误码: $errorCode"
                     }
+                    Toast.makeText(this@MultiWindowBrowserActivity, errorMessage, Toast.LENGTH_SHORT).show()
                 }
                 
                 override fun onReceivedHttpError(
                     view: WebView?,
-                    request: WebResourceRequest?,
-                    errorResponse: android.webkit.WebResourceResponse?
+                    request: com.tencent.smtt.export.external.interfaces.WebResourceRequest?,
+                    errorResponse: WebResourceResponse?
                 ) {
                     super.onReceivedHttpError(view, request, errorResponse)
                     if (request?.isForMainFrame == true) {
@@ -297,7 +294,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     handler: SslErrorHandler?,
                     error: SslError?
                 ) {
-                    // 对于某些SSL错误，默认继续加载
                     when (error?.primaryError) {
                         SslError.SSL_DATE_INVALID,
                         SslError.SSL_EXPIRED,
@@ -334,7 +330,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     }
                 }
                 
-                override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                override fun onConsoleMessage(consoleMessage: com.tencent.smtt.export.external.interfaces.ConsoleMessage?): Boolean {
                     return true
                 }
             }
