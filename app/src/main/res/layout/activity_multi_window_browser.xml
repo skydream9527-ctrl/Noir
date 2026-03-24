@@ -104,8 +104,7 @@
         android:id="@+id/webViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="56dp"
-        android:clipToPadding="false"
+        android:layout_marginBottom="56dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- 首页视图 -->
