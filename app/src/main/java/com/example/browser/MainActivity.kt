@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         setupSearchEngineSpinner()
         setupSearchInput()
         setupQuickAccessButtons()
+        setupBottomNavigation()
     }
 
     private fun setupSearchEngineSpinner() {
@@ -145,6 +146,33 @@ class MainActivity : AppCompatActivity() {
         // 抖音快捷访问
         binding.btnDouyin.setOnClickListener {
             openQuickAccess("抖音", "https://www.douyin.com")
+        }
+    }
+
+    private fun setupBottomNavigation() {
+        // Home - 返回主页（当前已经在主页，可以刷新或提示）
+        binding.btnHome.setOnClickListener {
+            // 已经在主页，可以清空搜索框或刷新
+            binding.etSearch.text.clear()
+            binding.etSearch.clearFocus()
+            Toast.makeText(this, "已回到主页", Toast.LENGTH_SHORT).show()
+        }
+
+        // 多窗口 - 打开多窗口浏览器
+        binding.btnMultiWindow.setOnClickListener {
+            val intent = Intent(this, MultiWindowBrowserActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Back - 在主页返回可以退出应用或提示
+        binding.btnBack.setOnClickListener {
+            // 在主页返回键可以关闭应用或返回桌面
+            moveTaskToBack(true)
+        }
+
+        // 我的 - 暂无功能，显示提示
+        binding.btnProfile.setOnClickListener {
+            Toast.makeText(this, "我的页面功能开发中", Toast.LENGTH_SHORT).show()
         }
     }
 

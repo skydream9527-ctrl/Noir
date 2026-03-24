@@ -3,11 +3,14 @@ package com.example.browser
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -103,12 +106,30 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             settings.domStorageEnabled = true
             settings.cacheMode = WebSettings.LOAD_DEFAULT
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            // 增加稳定性设置
+            settings.setSupportMultipleWindows(true)
+            settings.javaScriptCanOpenWindowsAutomatically = true
+            settings.allowFileAccess = false
+            settings.allowContentAccess = false
             
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
                     request: WebResourceRequest?
                 ): Boolean {
+                    val url = request?.url?.toString() ?: return false
+                    // 处理特殊协议
+                    if (url.startsWith("tel:") || url.startsWith("mailto:") || 
+                        url.startsWith("intent:") || url.startsWith("market:")) {
+                        try {
+                            val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                            startActivity(intent)
+                            return true
+                        } catch (e: Exception) {
+                            // 无法处理该协议
+                            return false
+                        }
+                    }
                     return false
                 }
                 
@@ -128,6 +149,44 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     view?.title?.let {
                         tabManager.updateTab(tab.id, title = it)
                     }
+                }
+                
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?
+                ) {
+                    super.onReceivedError(view, request, error)
+                    // 处理加载错误
+                    if (request?.isForMainFrame == true) {
+                        val errorMessage = when (error?.errorCode) {
+                            WebViewClient.ERROR_HOST_LOOKUP -> "无法找到服务器，请检查网络连接"
+                            WebViewClient.ERROR_CONNECT -> "连接失败，请检查网络"
+                            WebViewClient.ERROR_TIMEOUT -> "连接超时，请稍后重试"
+                            WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> "SSL握手失败"
+                            WebViewClient.ERROR_BAD_URL -> "无效的网址"
+                            else -> "页面加载失败"
+                        }
+                        Toast.makeText(this@MultiWindowBrowserActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: SslErrorHandler?,
+                    error: SslError?
+                ) {
+                    // 处理SSL错误，给用户选择
+                    AlertDialog.Builder(this@MultiWindowBrowserActivity)
+                        .setTitle("SSL证书错误")
+                        .setMessage("该网站的SSL证书存在问题，是否继续访问？\n错误: ${error?.toString()}")
+                        .setPositiveButton("继续") { _, _ ->
+                            handler?.proceed()
+                        }
+                        .setNegativeButton("取消") { _, _ ->
+                            handler?.cancel()
+                        }
+                        .show()
                 }
             }
             
@@ -156,10 +215,16 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             webView = createWebView(tab)
         }
         
-        val finalUrl = if (url.startsWith("http://") || url.startsWith("https://")) {
-            url
-        } else {
-            "https://$url"
+        // 修复URL处理逻辑
+        val finalUrl = when {
+            url.startsWith("http://") || url.startsWith("https://") -> url
+            url.startsWith("www.") -> "https://$url"
+            url.contains(".") && !url.contains(" ") -> "https://$url"
+            else -> {
+                // 作为搜索查询处理
+                val encodedQuery = java.net.URLEncoder.encode(url, "UTF-8")
+                "https://www.baidu.com/s?wd=$encodedQuery"
+            }
         }
         
         webView.loadUrl(finalUrl)
@@ -302,12 +367,13 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     private fun shareCurrentPage() {
         val activeTab = tabManager.getActiveTab()
         activeTab?.let { tab ->
-            val intent = Intent(Intent.ACTION_SEND).apply {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, tab.url)
                 putExtra(Intent.EXTRA_TITLE, tab.title)
+                putExtra(Intent.EXTRA_TEXT, tab.url)
             }
-            startActivity(Intent.createChooser(intent, "分享"))
+            startActivity(Intent.createChooser(shareIntent, "分享"))
         }
     }
     
@@ -331,16 +397,13 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         }
         webViews.remove(tabId)
         
-        // 从管理器移除
+        // 从管理器中移除
         tabManager.removeTab(tabId)
         
         // 显示新的活动标签页
         val activeTab = tabManager.getActiveTab()
         if (activeTab != null) {
             showTab(activeTab)
-        } else {
-            // 如果没有标签页了，返回主页
-            finish()
         }
         
         updateTabCount()
@@ -351,16 +414,12 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         webViews.values.forEach { webView ->
             webView.stopLoading()
             webView.destroy()
+            binding.webViewContainer.removeView(webView)
         }
         webViews.clear()
-        binding.webViewContainer.removeAllViews()
         
-        // 清空管理器
+        // 清空标签管理器
         tabManager.closeAllTabs()
-        
-        // 创建一个新标签页
-        val newTab = tabManager.createNewTab()
-        showTab(newTab)
         
         updateTabCount()
     }
@@ -423,9 +482,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 tab.url
             }
             
-            // 活动标签页高亮
-            holder.cardView.alpha = if (tab.isActive) 1.0f else 0.7f
-            
+            // 设置点击事件
             holder.cardView.setOnClickListener {
                 onAction(TabAction.SWITCH, tab)
             }
