@@ -136,19 +136,48 @@ class SettingsActivity : AppCompatActivity() {
         }
         
         binding.btnSearchEngine.setOnClickListener {
-            val engines = searchEngineManager.getEngineList().toTypedArray()
+            val engines = searchEngineManager.getEngineList()
+            val engineNames = engines.toTypedArray()
+            val engineIcons = engines.map { getSearchEngineIconRes(it) }.toIntArray()
             val currentEngine = searchEngineManager.getDefaultEngine()
             val currentIndex = engines.indexOf(currentEngine)
             
+            val adapter = object : android.widget.ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice, engineNames) {
+                override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup): android.view.View {
+                    val view = super.getView(position, convertView, parent)
+                    val textView = view.findViewById<android.widget.TextView>(android.R.id.text1)
+                    textView.setCompoundDrawablesWithIntrinsicBounds(engineIcons[position], 0, 0, 0)
+                    textView.compoundDrawablePadding = 16
+                    return view
+                }
+            }
+            
             AlertDialog.Builder(this)
                 .setTitle("选择默认搜索引擎")
-                .setSingleChoiceItems(engines, currentIndex) { dialog, which ->
+                .setSingleChoiceItems(adapter, currentIndex) { dialog, which ->
                     searchEngineManager.setDefaultEngine(engines[which])
                     binding.tvSearchEngine.text = engines[which]
                     dialog.dismiss()
                 }
                 .setNegativeButton("取消", null)
                 .show()
+        }
+    }
+    
+    private fun getSearchEngineIconRes(engine: String): Int {
+        return when (engine) {
+            "百度" -> R.drawable.ic_baidu
+            "搜狗" -> R.drawable.ic_sogou
+            "必应" -> R.drawable.ic_bing
+            "抖音" -> R.drawable.ic_douyin
+            "哔哩哔哩" -> R.drawable.ic_bilibili
+            "知乎" -> R.drawable.ic_zhihu
+            "优酷" -> R.drawable.ic_youku
+            "爱奇艺" -> R.drawable.ic_iqiyi
+            "腾讯视频" -> R.drawable.ic_tencent
+            "豆包" -> R.drawable.ic_doubao
+            "千问" -> R.drawable.ic_qianwen
+            else -> R.drawable.ic_search
         }
     }
 

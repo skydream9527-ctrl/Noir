@@ -145,26 +145,104 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         updateSearchEngineIcon()
         
         // 快捷访问
-        binding.quickBaidu.setOnClickListener { openQuickAccess("https://www.baidu.com") }
-        binding.quickSogou.setOnClickListener { openQuickAccess("https://www.sogou.com") }
-        binding.quickBing.setOnClickListener { openQuickAccess("https://www.bing.com") }
-        binding.quickDouyin.setOnClickListener { openQuickAccess("https://www.douyin.com") }
-        binding.quickBilibili.setOnClickListener { openQuickAccess("https://www.bilibili.com") }
-        binding.quickZhihu.setOnClickListener { openQuickAccess("https://www.zhihu.com") }
-        binding.quickYouku.setOnClickListener { openQuickAccess("https://www.youku.com") }
-        binding.quickIqiyi.setOnClickListener { openQuickAccess("https://www.iqiyi.com") }
-        binding.quickTencent.setOnClickListener { openQuickAccess("https://v.qq.com") }
-        binding.quickDoubao.setOnClickListener { openQuickAccess("https://www.doubao.com") }
-        binding.quickQianwen.setOnClickListener { openQuickAccess("https://tongyi.aliyun.com/qianwen") }
+        binding.quickBaidu.setOnClickListener { 
+            currentSearchEngine = "百度"
+            searchEngineManager.setDefaultEngine("百度")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.baidu.com") 
+        }
+        binding.quickSogou.setOnClickListener { 
+            currentSearchEngine = "搜狗"
+            searchEngineManager.setDefaultEngine("搜狗")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.sogou.com") 
+        }
+        binding.quickBing.setOnClickListener { 
+            currentSearchEngine = "必应"
+            searchEngineManager.setDefaultEngine("必应")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.bing.com") 
+        }
+        binding.quickDouyin.setOnClickListener { 
+            currentSearchEngine = "抖音"
+            searchEngineManager.setDefaultEngine("抖音")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.douyin.com") 
+        }
+        binding.quickBilibili.setOnClickListener { 
+            currentSearchEngine = "哔哩哔哩"
+            searchEngineManager.setDefaultEngine("哔哩哔哩")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.bilibili.com") 
+        }
+        binding.quickZhihu.setOnClickListener { 
+            currentSearchEngine = "知乎"
+            searchEngineManager.setDefaultEngine("知乎")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.zhihu.com") 
+        }
+        binding.quickYouku.setOnClickListener { 
+            currentSearchEngine = "优酷"
+            searchEngineManager.setDefaultEngine("优酷")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.youku.com") 
+        }
+        binding.quickIqiyi.setOnClickListener { 
+            currentSearchEngine = "爱奇艺"
+            searchEngineManager.setDefaultEngine("爱奇艺")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.iqiyi.com") 
+        }
+        binding.quickTencent.setOnClickListener { 
+            currentSearchEngine = "腾讯视频"
+            searchEngineManager.setDefaultEngine("腾讯视频")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://v.qq.com") 
+        }
+        binding.quickDoubao.setOnClickListener { 
+            currentSearchEngine = "豆包"
+            searchEngineManager.setDefaultEngine("豆包")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://www.doubao.com") 
+        }
+        binding.quickQianwen.setOnClickListener { 
+            currentSearchEngine = "千问"
+            searchEngineManager.setDefaultEngine("千问")
+            updateSearchEngineIcon()
+            updateToolbarSearchEngineIcon()
+            openQuickAccess("https://tongyi.aliyun.com/qianwen") 
+        }
     }
     
     private fun showSearchEngineSelector() {
-        val engines = searchEngineManager.getEngineList().toTypedArray()
+        val engines = searchEngineManager.getEngineList()
+        val engineNames = engines.toTypedArray()
+        val engineIcons = engines.map { getSearchEngineIconRes(it) }.toIntArray()
         val currentIndex = engines.indexOf(currentSearchEngine)
+        
+        val adapter = object : android.widget.ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice, engineNames) {
+            override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup): android.view.View {
+                val view = super.getView(position, convertView, parent)
+                val textView = view.findViewById<android.widget.TextView>(android.R.id.text1)
+                textView.setCompoundDrawablesWithIntrinsicBounds(engineIcons[position], 0, 0, 0)
+                textView.compoundDrawablePadding = 16
+                return view
+            }
+        }
         
         AlertDialog.Builder(this)
             .setTitle("选择搜索引擎")
-            .setSingleChoiceItems(engines, currentIndex) { dialog, which ->
+            .setSingleChoiceItems(adapter, currentIndex) { dialog, which ->
                 currentSearchEngine = engines[which]
                 searchEngineManager.setDefaultEngine(currentSearchEngine)
                 updateSearchEngineIcon()
