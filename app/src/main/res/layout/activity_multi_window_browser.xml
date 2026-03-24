@@ -162,6 +162,17 @@
 
         </FrameLayout>
 
+        <!-- 收藏 -->
+        <ImageButton
+            android:id="@+id/btnFavorite"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_favorites"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="收藏" />
+
         <!-- 菜单 -->
         <ImageButton
             android:id="@+id/btnMenu"

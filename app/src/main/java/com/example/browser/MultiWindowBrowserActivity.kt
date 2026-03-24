@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.browser.data.Tab
 import com.example.browser.data.TabManager
+import com.example.browser.data.FavoriteManager
 import com.example.browser.databinding.ActivityMultiWindowBrowserBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.net.URL
@@ -33,6 +34,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMultiWindowBrowserBinding
     private lateinit var tabManager: TabManager
+    private lateinit var favoriteManager: FavoriteManager
     private val webViews = mutableMapOf<String, WebView>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +43,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         tabManager = TabManager(this)
+        favoriteManager = FavoriteManager(this)
         
         initToolbar()
         initWebViewContainer()
@@ -153,6 +156,9 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     view?.title?.let {
                         tabManager.updateTab(tab.id, title = it)
                     }
+                    url?.let {
+                        updateFavoriteIcon(it)
+                    }
                 }
                 
                 override fun onReceivedError(
@@ -256,6 +262,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         // 更新地址栏
         if (tab.url.isNotEmpty()) {
             binding.etUrl.setText(tab.url)
+            updateFavoriteIcon(tab.url)
         }
         
         // 更新标签计数
@@ -297,6 +304,11 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         // 多窗口/标签页按钮
         binding.btnTabs.setOnClickListener {
             showTabsDialog()
+        }
+        
+        // 收藏按钮
+        binding.btnFavorite.setOnClickListener {
+            toggleFavorite()
         }
         
         // 菜单按钮
@@ -356,7 +368,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun showMenuDialog() {
-        val items = arrayOf("分享", "刷新", "添加到收藏", "设置")
+        val items = arrayOf("分享", "刷新", "添加到收藏", "查看收藏", "设置")
         AlertDialog.Builder(this)
             .setItems(items) { _, which ->
                 when (which) {
@@ -367,11 +379,17 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                             webViews[tab.id]?.reload()
                         }
                     }
-                    2 -> addToFavorites()
-                    3 -> openSettings()
+                    2 -> toggleFavorite()
+                    3 -> openFavorites()
+                    4 -> openSettings()
                 }
             }
             .show()
+    }
+    
+    private fun openFavorites() {
+        val intent = Intent(this, FavoritesActivity::class.java)
+        startActivity(intent)
     }
     
     private fun shareCurrentPage() {
@@ -387,15 +405,40 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         }
     }
     
-    private fun addToFavorites() {
+    private fun openSettings() {
+        Toast.makeText(this, "设置功能开发中", Toast.LENGTH_SHORT).show()
+    }
+    
+    private fun toggleFavorite() {
         val activeTab = tabManager.getActiveTab()
         activeTab?.let { tab ->
-            Toast.makeText(this, "已添加到收藏: ${tab.title}", Toast.LENGTH_SHORT).show()
+            if (tab.url.isNotEmpty()) {
+                if (favoriteManager.isFavorite(tab.url)) {
+                    val favorite = favoriteManager.getFavoriteByUrl(tab.url)
+                    favorite?.let {
+                        favoriteManager.removeFavorite(it.id)
+                        Toast.makeText(this, "已取消收藏", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    favoriteManager.addFavorite(
+                        title = tab.title.ifEmpty { tab.url },
+                        url = tab.url
+                    )
+                    Toast.makeText(this, "已添加到收藏", Toast.LENGTH_SHORT).show()
+                }
+                updateFavoriteIcon(tab.url)
+            }
         }
     }
     
-    private fun openSettings() {
-        Toast.makeText(this, "设置功能开发中", Toast.LENGTH_SHORT).show()
+    private fun updateFavoriteIcon(url: String) {
+        val isFavorite = favoriteManager.isFavorite(url)
+        val iconRes = if (isFavorite) {
+            R.drawable.ic_favorite_filled
+        } else {
+            R.drawable.ic_favorites
+        }
+        binding.btnFavorite.setImageResource(iconRes)
     }
     
     private fun removeTab(tabId: String) {

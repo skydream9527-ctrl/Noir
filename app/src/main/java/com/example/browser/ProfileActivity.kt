@@ -70,7 +70,8 @@ class ProfileActivity : AppCompatActivity() {
 
         // 菜单项点击
         binding.menuFavorites.setOnClickListener {
-            Toast.makeText(this, "收藏功能开发中", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, FavoritesActivity::class.java)
+            startActivity(intent)
         }
         binding.menuHistory.setOnClickListener {
             Toast.makeText(this, "历史记录功能开发中", Toast.LENGTH_SHORT).show()
