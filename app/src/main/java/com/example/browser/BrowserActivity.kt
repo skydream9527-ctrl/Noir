@@ -56,7 +56,7 @@ class BrowserActivity : AppCompatActivity() {
         settings.loadWithOverviewMode = true
         settings.domStorageEnabled = true
         settings.cacheMode = WebSettings.LOAD_DEFAULT
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        settings.mixedContentMode = 0
         settings.userAgentString = settings.userAgentString + " BrowserApp/1.0"
 
         webView.webViewClient = object : WebViewClient() {

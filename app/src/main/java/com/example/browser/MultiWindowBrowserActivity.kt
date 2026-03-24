@@ -6,13 +6,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.tencent.smtt.export.external.interfaces.SslErrorHandler
-import com.tencent.smtt.export.external.interfaces.WebResourceError
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse
 import com.tencent.smtt.sdk.WebChromeClient
 import com.tencent.smtt.sdk.WebSettings
@@ -192,7 +189,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             settings.domStorageEnabled = true
             settings.databaseEnabled = true
             settings.cacheMode = WebSettings.LOAD_DEFAULT
-            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            settings.mixedContentMode = 0
             settings.allowFileAccess = true
             settings.allowContentAccess = true
             settings.blockNetworkImage = false
@@ -286,33 +283,6 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                         if (statusCode >= 400) {
                             Toast.makeText(this@MultiWindowBrowserActivity, "HTTP错误: $statusCode", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                }
-                
-                override fun onReceivedSslError(
-                    view: WebView?,
-                    handler: SslErrorHandler?,
-                    error: SslError?
-                ) {
-                    when (error?.primaryError) {
-                        SslError.SSL_DATE_INVALID,
-                        SslError.SSL_EXPIRED,
-                        SslError.SSL_IDMISMATCH,
-                        SslError.SSL_NOTYETVALID,
-                        SslError.SSL_UNTRUSTED -> {
-                            AlertDialog.Builder(this@MultiWindowBrowserActivity)
-                                .setTitle("SSL证书警告")
-                                .setMessage("该网站的SSL证书存在问题，是否继续访问？")
-                                .setPositiveButton("继续访问") { _, _ ->
-                                    handler?.proceed()
-                                }
-                                .setNegativeButton("取消") { _, _ ->
-                                    handler?.cancel()
-                                }
-                                .setCancelable(false)
-                                .show()
-                        }
-                        else -> handler?.proceed()
                     }
                 }
             }

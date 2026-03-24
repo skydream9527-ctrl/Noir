@@ -29,13 +29,13 @@ object X5InitHelper {
         })
         
         QbSdk.initX5Environment(context.applicationContext, object : QbSdk.PreInitCallback {
-            override fun onCoreInitFinished() {
-                Log.d(TAG, "X5内核初始化完成")
-                isInitialized = true
-            }
-            
-            override fun onCoreInitFailed() {
-                Log.e(TAG, "X5内核初始化失败，将使用系统WebView")
+            override fun onViewInitFinished(success: Boolean) {
+                if (success) {
+                    Log.d(TAG, "X5内核初始化完成")
+                    isInitialized = true
+                } else {
+                    Log.e(TAG, "X5内核初始化失败，将使用系统WebView")
+                }
             }
         })
     }
