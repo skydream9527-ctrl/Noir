@@ -416,7 +416,8 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         val btnCloseAll = view.findViewById<View>(R.id.btnCloseAll)
         
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = TabsAdapter(tabManager.getAllTabs()) { action, tab ->
+        
+        val adapter = TabsAdapter(tabManager.getAllTabs().toMutableList()) { action, tab ->
             when (action) {
                 TabAction.SWITCH -> {
                     tabManager.switchToTab(tab.id)
@@ -425,7 +426,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 }
                 TabAction.CLOSE -> {
                     removeTab(tab.id)
-                    recyclerView.adapter?.notifyDataSetChanged()
+                    (recyclerView.adapter as? TabsAdapter)?.updateData(tabManager.getAllTabs())
                     if (tabManager.getTabCount() == 0) {
                         bottomSheet.dismiss()
                         finish()
@@ -433,6 +434,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 }
             }
         }
+        recyclerView.adapter = adapter
         
         btnNewTab.setOnClickListener {
             val newTab = tabManager.createNewTab()
@@ -598,7 +600,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     inner class TabsAdapter(
-        private var tabs: List<Tab>,
+        private var tabs: MutableList<Tab>,
         private val onAction: (TabAction, Tab) -> Unit
     ) : RecyclerView.Adapter<TabsAdapter.TabViewHolder>() {
         
@@ -617,11 +619,11 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         
         override fun onBindViewHolder(holder: TabViewHolder, position: Int) {
             val tab = tabs[position]
-            holder.tvTitle.text = tab.title
+            holder.tvTitle.text = tab.title.ifEmpty { "新标签页" }
             holder.tvUrl.text = try {
-                URL(tab.url).host
+                if (tab.url.isNotEmpty()) URL(tab.url).host else "首页"
             } catch (e: Exception) {
-                tab.url
+                tab.url.ifEmpty { "首页" }
             }
             
             // 设置点击事件
@@ -636,8 +638,9 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         
         override fun getItemCount(): Int = tabs.size
         
-        fun updateTabs(newTabs: List<Tab>) {
-            tabs = newTabs
+        fun updateData(newTabs: List<Tab>) {
+            tabs.clear()
+            tabs.addAll(newTabs)
             notifyDataSetChanged()
         }
     }
