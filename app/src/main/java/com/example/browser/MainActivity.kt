@@ -158,9 +158,11 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "已回到主页", Toast.LENGTH_SHORT).show()
         }
 
-        // 多窗口 - 打开多窗口浏览器
+        // 多窗口 - 打开多窗口浏览器并显示窗口列表
         binding.btnMultiWindow.setOnClickListener {
-            val intent = Intent(this, MultiWindowBrowserActivity::class.java)
+            val intent = Intent(this, MultiWindowBrowserActivity::class.java).apply {
+                putExtra("show_tabs", true)
+            }
             startActivity(intent)
         }
 

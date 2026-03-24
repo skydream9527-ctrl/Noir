@@ -52,12 +52,21 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         initWebViewContainer()
         initBottomBar()
         
-        // 处理传入的URL
+        // 处理传入的参数
         val url = intent.getStringExtra("url")
+        val showTabs = intent.getBooleanExtra("show_tabs", false)
+        
         if (url != null) {
             // 如果有传入URL，在新标签页打开
             val tab = tabManager.createNewTab(url)
             loadUrlInTab(tab, url)
+        } else if (showTabs) {
+            // 显示窗口选择列表，如果没有窗口则创建新的首页
+            if (tabManager.getTabCount() == 0) {
+                val newTab = tabManager.createNewTab()
+                showTab(newTab)
+            }
+            showTabsDialog()
         } else {
             // 切换到当前活动标签页
             val activeTab = tabManager.getActiveTab()
@@ -351,6 +360,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     recyclerView.adapter?.notifyDataSetChanged()
                     if (tabManager.getTabCount() == 0) {
                         bottomSheet.dismiss()
+                        finish()
                     }
                 }
             }
@@ -369,6 +379,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 .setPositiveButton("确定") { _, _ ->
                     closeAllTabs()
                     bottomSheet.dismiss()
+                    finish()
                 }
                 .setNegativeButton("取消", null)
                 .show()
