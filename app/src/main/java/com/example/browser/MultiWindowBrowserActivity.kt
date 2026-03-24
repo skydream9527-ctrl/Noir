@@ -346,8 +346,10 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             settings.setSupportMultipleWindows(true)
             settings.userAgentString = settings.userAgentString
             
-            // 设置WebView层级
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            
+            com.tencent.smtt.sdk.CookieManager.getInstance().setAcceptCookie(true)
+            com.tencent.smtt.sdk.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
             
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
