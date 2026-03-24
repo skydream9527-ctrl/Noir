@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.browser.data.Favorite
 import com.example.browser.data.FavoriteManager
 import com.example.browser.databinding.ActivityFavoritesBinding
+import android.widget.Toast
 import java.net.URL
 
 class FavoritesActivity : AppCompatActivity() {
@@ -37,6 +38,27 @@ class FavoritesActivity : AppCompatActivity() {
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
+        }
+        
+        binding.btnClearAll.setOnClickListener {
+            if (favoriteManager.getFavoriteCount() == 0) {
+                Toast.makeText(this, "暂无收藏", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            AlertDialog.Builder(this)
+                .setTitle("清空收藏")
+                .setMessage("确定要清空所有收藏吗？")
+                .setPositiveButton("清空") { _, _ ->
+                    while (favoriteManager.getFavoriteCount() > 0) {
+                        favoriteManager.getAllFavorites().forEach {
+                            favoriteManager.removeFavorite(it.id)
+                        }
+                    }
+                    loadFavorites()
+                    Toast.makeText(this, "收藏已清空", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("取消", null)
+                .show()
         }
     }
 

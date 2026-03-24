@@ -41,6 +41,23 @@ class HistoryActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
+        
+        binding.btnClearAll.setOnClickListener {
+            if (historyManager.getHistoryCount() == 0) {
+                Toast.makeText(this, "暂无浏览记录", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            AlertDialog.Builder(this)
+                .setTitle("清空历史")
+                .setMessage("确定要清空所有浏览记录吗？")
+                .setPositiveButton("清空") { _, _ ->
+                    historyManager.clearAllHistories()
+                    loadHistories()
+                    Toast.makeText(this, "已清空浏览记录", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("取消", null)
+                .show()
+        }
     }
 
     private fun setupRecyclerView() {

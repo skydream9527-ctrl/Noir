@@ -78,7 +78,8 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.menuSettings.setOnClickListener {
-            Toast.makeText(this, "设置功能开发中", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 

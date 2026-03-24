@@ -548,7 +548,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun showMenuDialog() {
-        val items = arrayOf("分享", "刷新", "添加到收藏", "查看收藏", "设置")
+        val items = arrayOf("分享", "刷新", "添加到收藏", "查看收藏", "浏览历史", "设置")
         AlertDialog.Builder(this)
             .setItems(items) { _, which ->
                 when (which) {
@@ -561,10 +561,16 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                     }
                     2 -> toggleFavorite()
                     3 -> openFavorites()
-                    4 -> openSettings()
+                    4 -> openHistory()
+                    5 -> openSettings()
                 }
             }
             .show()
+    }
+    
+    private fun openHistory() {
+        val intent = Intent(this, HistoryActivity::class.java)
+        startActivity(intent)
     }
     
     private fun openFavorites() {
@@ -586,7 +592,8 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun openSettings() {
-        Toast.makeText(this, "设置功能开发中", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
     
     private fun toggleFavorite() {

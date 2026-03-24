@@ -150,12 +150,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        // Home - 返回主页（当前已经在主页，可以刷新或提示）
+        // Home - 清空搜索框
         binding.btnHome.setOnClickListener {
-            // 已经在主页，可以清空搜索框或刷新
             binding.etSearch.text.clear()
             binding.etSearch.clearFocus()
-            Toast.makeText(this, "已回到主页", Toast.LENGTH_SHORT).show()
         }
 
         // 多窗口 - 打开多窗口浏览器并显示窗口列表
@@ -166,10 +164,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Back - 在主页返回可以退出应用或提示
+        // Back - 双击退出应用
         binding.btnBack.setOnClickListener {
-            // 在主页返回键可以关闭应用或返回桌面
-            moveTaskToBack(true)
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                finish()
+            } else {
+                Toast.makeText(this, "再按一次退出应用", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
         }
 
         // 我的 - 打开个人中心页面
@@ -178,6 +180,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+    
+    private var backPressedTime: Long = 0
 
     private fun openQuickAccess(name: String, url: String) {
         // 设置当前搜索引擎
