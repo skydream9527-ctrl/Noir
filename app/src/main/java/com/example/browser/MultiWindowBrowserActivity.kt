@@ -16,6 +16,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -38,6 +39,13 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     private lateinit var favoriteManager: FavoriteManager
     private lateinit var historyManager: HistoryManager
     private val webViews = mutableMapOf<String, WebView>()
+    
+    private val searchEngines = mapOf(
+        "百度" to "https://www.baidu.com/s?wd=",
+        "搜狗" to "https://www.sogou.com/web?query=",
+        "必应" to "https://www.bing.com/search?q=",
+        "抖音" to "https://www.douyin.com/search/"
+    )
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +109,49 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 webViews[tab.id]?.reload()
             }
         }
+        
+        // 首页搜索框
+        binding.etHomeSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH || 
+                actionId == android.view.inputmethod.EditorInfo.IME_ACTION_GO) {
+                performHomeSearch()
+                true
+            } else {
+                false
+            }
+        }
+        
+        binding.btnHomeSearch.setOnClickListener {
+            performHomeSearch()
+        }
+        
+        // 快捷访问
+        binding.quickBaidu.setOnClickListener { openQuickAccess("https://www.baidu.com") }
+        binding.quickSogou.setOnClickListener { openQuickAccess("https://www.sogou.com") }
+        binding.quickBing.setOnClickListener { openQuickAccess("https://www.bing.com") }
+        binding.quickDouyin.setOnClickListener { openQuickAccess("https://www.douyin.com") }
+    }
+    
+    private fun performHomeSearch() {
+        val query = binding.etHomeSearch.text.toString().trim()
+        if (query.isEmpty()) return
+        
+        val url = if (isUrl(query)) {
+            if (query.startsWith("http://") || query.startsWith("https://")) query else "https://$query"
+        } else {
+            searchEngines["百度"] + java.net.URLEncoder.encode(query, "UTF-8")
+        }
+        
+        binding.etHomeSearch.text.clear()
+        loadUrl(url)
+    }
+    
+    private fun openQuickAccess(url: String) {
+        loadUrl(url)
+    }
+    
+    private fun isUrl(query: String): Boolean {
+        return query.contains(".") && !query.contains(" ")
     }
     
     private fun initWebViewContainer() {
@@ -239,6 +290,10 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun loadUrlInTab(tab: Tab, url: String) {
+        // 隐藏首页，显示WebView
+        binding.homeView.visibility = View.GONE
+        binding.webViewContainer.visibility = View.VISIBLE
+        
         var webView = webViews[tab.id]
         if (webView == null) {
             webView = createWebView(tab)
@@ -267,6 +322,22 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun showTab(tab: Tab) {
+        // 更新标签计数
+        updateTabCount()
+        
+        // 如果标签页没有URL，显示首页
+        if (tab.url.isEmpty()) {
+            binding.webViewContainer.visibility = View.GONE
+            binding.homeView.visibility = View.VISIBLE
+            webViews.values.forEach { it.visibility = View.GONE }
+            binding.etUrl.setText("")
+            return
+        }
+        
+        // 隐藏首页，显示WebView
+        binding.homeView.visibility = View.GONE
+        binding.webViewContainer.visibility = View.VISIBLE
+        
         // 隐藏所有WebView
         webViews.values.forEach { it.visibility = View.GONE }
         
@@ -279,15 +350,14 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         webView.visibility = View.VISIBLE
         
         // 更新地址栏
-        if (tab.url.isNotEmpty()) {
-            binding.etUrl.setText(tab.url)
-        }
-        
-        // 更新标签计数
-        updateTabCount()
+        binding.etUrl.setText(tab.url)
     }
     
     private fun loadUrl(url: String) {
+        // 隐藏首页，显示WebView容器
+        binding.homeView.visibility = View.GONE
+        binding.webViewContainer.visibility = View.VISIBLE
+        
         val activeTab = tabManager.getActiveTab()
         if (activeTab != null) {
             loadUrlInTab(activeTab, url)
@@ -316,7 +386,12 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         
         // 主页按钮
         binding.btnHome.setOnClickListener {
-            finish()
+            val activeTab = tabManager.getActiveTab()
+            activeTab?.let { tab ->
+                // 清空当前标签页的URL，显示首页
+                tabManager.updateTab(tab.id, url = "", title = "新标签页")
+                showTab(tab)
+            }
         }
         
         // 多窗口/标签页按钮
@@ -488,13 +563,23 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     override fun onBackPressed() {
+        // 如果首页可见，直接返回
+        if (binding.homeView.visibility == View.VISIBLE) {
+            super.onBackPressed()
+            return
+        }
+        
         val activeTab = tabManager.getActiveTab()
         val webView = activeTab?.let { webViews[it.id] }
         
         if (webView?.canGoBack() == true) {
             webView.goBack()
         } else {
-            super.onBackPressed()
+            // WebView无法返回，显示首页
+            activeTab?.let { tab ->
+                tabManager.updateTab(tab.id, url = "", title = "新标签页")
+                showTab(tab)
+            }
         }
     }
     
