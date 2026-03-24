@@ -519,10 +519,8 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     }
     
     private fun showTab(tab: Tab) {
-        // 更新标签计数
         updateTabCount()
         
-        // 如果标签页没有URL，显示首页
         if (tab.url.isEmpty()) {
             binding.webViewContainer.visibility = View.GONE
             binding.homeView.visibility = View.VISIBLE
@@ -531,22 +529,28 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
             return
         }
         
-        // 隐藏首页，显示WebView
         binding.homeView.visibility = View.GONE
         binding.webViewContainer.visibility = View.VISIBLE
         
-        // 隐藏所有WebView
         webViews.values.forEach { it.visibility = View.GONE }
         
-        // 显示指定标签页的WebView
         var webView = webViews[tab.id]
+        val needReload = webView == null
+        
         if (webView == null) {
             webView = createWebView(tab)
             binding.webViewContainer.addView(webView)
         }
         webView.visibility = View.VISIBLE
         
-        // 更新地址栏
+        if (needReload && tab.url.isNotEmpty()) {
+            val headers = mapOf(
+                "Accept-Language" to "zh-CN,zh;q=0.9,en;q=0.8",
+                "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            )
+            webView.loadUrl(tab.url, headers)
+        }
+        
         binding.etUrl.setText(tab.url)
     }
     
