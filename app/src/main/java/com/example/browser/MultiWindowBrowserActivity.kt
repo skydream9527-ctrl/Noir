@@ -44,7 +44,14 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         "百度" to "https://www.baidu.com/s?wd=",
         "搜狗" to "https://www.sogou.com/web?query=",
         "必应" to "https://www.bing.com/search?q=",
-        "抖音" to "https://www.douyin.com/search/"
+        "抖音" to "https://www.douyin.com/search/",
+        "哔哩哔哩" to "https://search.bilibili.com/all?keyword=",
+        "知乎" to "https://www.zhihu.com/search?q=",
+        "优酷" to "https://www.youku.com/search?q=",
+        "爱奇艺" to "https://so.iqiyi.com/so/q_",
+        "腾讯视频" to "https://v.qq.com/x/search/?q=",
+        "豆包" to "https://www.doubao.com/",
+        "千问" to "https://tongyi.aliyun.com/qianwen/"
     )
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,6 +137,13 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         binding.quickSogou.setOnClickListener { openQuickAccess("https://www.sogou.com") }
         binding.quickBing.setOnClickListener { openQuickAccess("https://www.bing.com") }
         binding.quickDouyin.setOnClickListener { openQuickAccess("https://www.douyin.com") }
+        binding.quickBilibili.setOnClickListener { openQuickAccess("https://www.bilibili.com") }
+        binding.quickZhihu.setOnClickListener { openQuickAccess("https://www.zhihu.com") }
+        binding.quickYouku.setOnClickListener { openQuickAccess("https://www.youku.com") }
+        binding.quickIqiyi.setOnClickListener { openQuickAccess("https://www.iqiyi.com") }
+        binding.quickTencent.setOnClickListener { openQuickAccess("https://v.qq.com") }
+        binding.quickDoubao.setOnClickListener { openQuickAccess("https://www.doubao.com") }
+        binding.quickQianwen.setOnClickListener { openQuickAccess("https://tongyi.aliyun.com/qianwen") }
     }
     
     private fun performHomeSearch() {
