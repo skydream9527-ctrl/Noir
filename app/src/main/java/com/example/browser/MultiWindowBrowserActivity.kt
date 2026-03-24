@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.browser.data.Tab
 import com.example.browser.data.TabManager
 import com.example.browser.data.FavoriteManager
+import com.example.browser.data.HistoryManager
 import com.example.browser.databinding.ActivityMultiWindowBrowserBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.net.URL
@@ -35,6 +36,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMultiWindowBrowserBinding
     private lateinit var tabManager: TabManager
     private lateinit var favoriteManager: FavoriteManager
+    private lateinit var historyManager: HistoryManager
     private val webViews = mutableMapOf<String, WebView>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,7 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
         
         tabManager = TabManager(this)
         favoriteManager = FavoriteManager(this)
+        historyManager = HistoryManager(this)
         
         initToolbar()
         initWebViewContainer()
@@ -153,11 +156,19 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     binding.progressBar.visibility = View.GONE
-                    view?.title?.let {
+                    val title = view?.title ?: ""
+                    title.let {
                         tabManager.updateTab(tab.id, title = it)
                     }
                     url?.let {
                         updateFavoriteIcon(it)
+                        // Add to history
+                        if (it.startsWith("http")) {
+                            historyManager.addHistory(
+                                title = title.ifEmpty { it },
+                                url = it
+                            )
+                        }
                     }
                 }
                 

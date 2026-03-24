@@ -55,6 +55,11 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.Browser" />
 
+        <activity
+            android:name=".HistoryActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.Browser" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

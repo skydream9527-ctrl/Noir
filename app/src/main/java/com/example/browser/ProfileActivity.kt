@@ -74,7 +74,8 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.menuHistory.setOnClickListener {
-            Toast.makeText(this, "历史记录功能开发中", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
         }
         binding.menuSettings.setOnClickListener {
             Toast.makeText(this, "设置功能开发中", Toast.LENGTH_SHORT).show()
