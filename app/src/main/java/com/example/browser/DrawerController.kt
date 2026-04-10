@@ -15,6 +15,7 @@ import com.example.browser.Drawer.HistoryFragment
 import com.example.browser.Drawer.TabsFragment
 import com.example.browser.AdBlock.AdBlockSettingsFragment
 import com.example.browser.SpeedUp.SpeedUpSettingsFragment
+import com.example.browser.Download.DownloadListFragment
 
 class DrawerController(
     private val activity: FragmentActivity,
@@ -24,7 +25,8 @@ class DrawerController(
     private val ivHistory: ImageView,
     private val ivTabs: ImageView,
     private var ivAdBlock: ImageView? = null,
-    private var ivSpeedUp: ImageView? = null,
+    private var ivSpeedUp: ImageView? = null
+    private var ivDownload: ImageView? = null,
     private val onNavigate: (String) -> Unit
 ) {
     
@@ -46,6 +48,10 @@ class DrawerController(
         ivSpeedUp = contentContainer.findViewById(R.id.ivSpeedUp)
         ivSpeedUp?.setOnClickListener {
             showSpeedUpSettings()
+        }
+        ivDownload = contentContainer.findViewById(R.id.ivDownload)
+        ivDownload?.setOnClickListener {
+            showDownloadList()
         }
         showTab(Tab.BOOKMARKS)
     }
@@ -119,11 +125,27 @@ class DrawerController(
             .commit()
         contentContainer.visibility = View.VISIBLE
         tabContainer.visibility = View.GONE
+        resetNavIconColors()
+        ivSpeedUp?.setColorFilter(Color.parseColor("#007AFF"))
+    }
+
+    private fun showDownloadList() {
+        activity.supportFragmentManager.beginTransaction()
+            .replace(R.id.contentContainer, DownloadListFragment())
+            .addToBackStack(null)
+            .commit()
+        contentContainer.visibility = View.VISIBLE
+        tabContainer.visibility = View.GONE
+        resetNavIconColors()
+        ivDownload?.setColorFilter(Color.parseColor("#007AFF"))
+    }
+
+    private fun resetNavIconColors() {
         ivBookmark?.setColorFilter(Color.GRAY)
         ivHistory?.setColorFilter(Color.GRAY)
         ivTabs?.setColorFilter(Color.GRAY)
         ivAdBlock?.setColorFilter(Color.GRAY)
-        ivSpeedUp?.setColorFilter(Color.parseColor("#007AFF"))
+        ivSpeedUp?.setColorFilter(Color.GRAY)
     }
 
     fun refresh() {
