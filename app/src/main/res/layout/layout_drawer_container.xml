@@ -49,6 +49,14 @@
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:contentDescription="广告拦截"/>
 
+        <ImageView
+            android:id="@+id/ivSpeedUp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:src="@android:drawable/ic_menu_upload"
+            android:contentDescription="加速设置"/>
+
     </LinearLayout>
 
     <View
