@@ -67,15 +67,18 @@ class AdBlockRulesManager(private val context: Context) {
     fun getContentBlockerScript(): String {
         if (contentRules.isEmpty()) return ""
         
-        val selectors = contentRules.joinToString(",\n") { rule ->
-            if (rule.startsWith("##")) {
-                rule.removePrefix("##")
-            } else if (rule.startsWith("###")) {
-                rule.removePrefix("###")
-            } else {
-                return@joinToString ""
+        val selectors = contentRules
+            .mapNotNull { rule ->
+                when {
+                    rule.startsWith("##") -> rule.removePrefix("##")
+                    rule.startsWith("###") -> rule.removePrefix("###")
+                    else -> null
+                }
             }
-        }.filter { it.isNotEmpty() }
+            .filter { it.isNotEmpty() }
+            .joinToString(",\n")
+        
+        if (selectors.isEmpty()) return ""
         
         return """
             (function() {

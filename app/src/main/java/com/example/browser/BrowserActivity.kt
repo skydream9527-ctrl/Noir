@@ -12,7 +12,7 @@ import com.tencent.smtt.sdk.WebChromeClient
 import com.tencent.smtt.sdk.WebSettings
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
-import com.example.browser.AdBlockManager
+import com.example.browser.AdBlock.AdBlockManager
 import com.example.browser.Download.DownloadManager
 import com.example.browser.SpeedUp.SpeedUpManager
 import com.example.browser.VideoEnhance.VideoEnhanceManager
@@ -20,8 +20,8 @@ import android.webkit.DownloadListener
 import com.example.browser.databinding.ActivityBrowserBinding
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import android.view.View
 import android.view.animation.AlphaAnimation
+import com.example.browser.data.TabManager
 
 class BrowserActivity : AppCompatActivity() {
 
