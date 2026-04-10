@@ -13,6 +13,7 @@ import com.tencent.smtt.sdk.WebSettings
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
 import com.example.browser.AdBlockManager
+import com.example.browser.SpeedUp.SpeedUpManager
 import com.example.browser.VideoEnhance.VideoEnhanceManager
 import com.example.browser.databinding.ActivityBrowserBinding
 import android.widget.FrameLayout
@@ -27,6 +28,7 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var tabManager: TabManager
     private lateinit var drawerController: DrawerController
     private lateinit var adBlockManager: AdBlockManager
+    private lateinit var speedUpManager: SpeedUpManager
     private lateinit var videoEnhanceManager: VideoEnhanceManager
     private lateinit var floatButtonContainer: FrameLayout
     private lateinit var btnPip: ImageButton
@@ -111,6 +113,18 @@ class BrowserActivity : AppCompatActivity() {
                         if (result == "true") {
                             runOnUiThread { showFloatButton() }
                         }
+                    }
+                }
+
+                if (speedUpManager.shouldInjectAccelerationScript()) {
+                    val dnsScript = speedUpManager.getDnsPrefetchScript()
+                    val preloadScript = speedUpManager.getPreloadScript()
+                    
+                    if (dnsScript.isNotEmpty()) {
+                        webView.evaluateJavascript(dnsScript, null)
+                    }
+                    if (preloadScript.isNotEmpty()) {
+                        webView.evaluateJavascript(preloadScript, null)
                     }
                 }
             }
@@ -225,6 +239,7 @@ class BrowserActivity : AppCompatActivity() {
         )
         
         adBlockManager = AdBlockManager(this)
+        speedUpManager = SpeedUpManager(this)
         
         binding.drawerScrim.setOnClickListener {
             closeDrawer()
