@@ -18,6 +18,7 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBrowserBinding
     private lateinit var webView: WebView
     private lateinit var tabManager: TabManager
+    private lateinit var drawerController: DrawerController
     
     private var currentTabId: String? = null
 
@@ -31,7 +32,7 @@ class BrowserActivity : AppCompatActivity() {
         
         setupWebView()
         setupBottomAddressBar()
-        setupDrawerScrim()
+        setupDrawer()
         
         loadInitialTab()
     }
@@ -98,7 +99,25 @@ class BrowserActivity : AppCompatActivity() {
         }
     }
     
-    private fun setupDrawerScrim() {
+    private fun setupDrawer() {
+        val contentContainer = binding.drawerContainer.findViewById<android.widget.FrameLayout>(R.id.contentContainer)
+        val ivBookmark = binding.drawerContainer.findViewById<android.widget.ImageView>(R.id.ivBookmark)
+        val ivHistory = binding.drawerContainer.findViewById<android.widget.ImageView>(R.id.ivHistory)
+        val ivTabs = binding.drawerContainer.findViewById<android.widget.ImageView>(R.id.ivTabs)
+        
+        drawerController = DrawerController(
+            activity = this,
+            tabContainer = binding.drawerContainer.findViewById(R.id.tabContainer),
+            contentContainer = contentContainer!!,
+            ivBookmark = ivBookmark!!,
+            ivHistory = ivHistory!!,
+            ivTabs = ivTabs!!,
+            onNavigate = { url ->
+                webView.loadUrl(url)
+                closeDrawer()
+            }
+        )
+        
         binding.drawerScrim.setOnClickListener {
             closeDrawer()
         }
