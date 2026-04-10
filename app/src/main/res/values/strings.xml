@@ -11,4 +11,5 @@
     <string name="new_tab">新标签页</string>
     <string name="tabs">标签页</string>
     <string name="close_all_tabs">关闭全部</string>
+    <string name="address_hint">输入网址或搜索</string>
 </resources>
