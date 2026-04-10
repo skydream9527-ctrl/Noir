@@ -1,6 +1,7 @@
 package com.example.browser
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -86,6 +87,13 @@ class BrowserActivity : AppCompatActivity() {
                 super.onProgressChanged(view, newProgress)
                 binding.progressBar.progress = newProgress
             }
+
+            override fun onReceivedTitle(view: WebView?, title: String?) {
+                super.onReceivedTitle(view, title)
+                title?.let {
+                    binding.bottomAddressBar.showReadingModeButton(it.isNotEmpty())
+                }
+            }
         }
     }
 
@@ -96,6 +104,23 @@ class BrowserActivity : AppCompatActivity() {
         
         binding.bottomAddressBar.onMenuClick = {
             toggleDrawer()
+        }
+
+        binding.bottomAddressBar.onReadingModeClick = {
+            startReadingMode()
+        }
+    }
+
+    private fun startReadingMode() {
+        webView.evaluateJavascript(
+            "(function() { return '<html>' + document.getElementsByTagName('html')[0].innerHTML + '</html>'; })();"
+        ) { html ->
+            if (html.isNotEmpty() && html.length > 100) {
+                val intent = Intent(this, ReadingModeActivity::class.java)
+                intent.putExtra(ReadingModeActivity.EXTRA_HTML, html)
+                intent.putExtra(ReadingModeActivity.EXTRA_URL, webView.url ?: "")
+                startActivity(intent)
+            }
         }
     }
     

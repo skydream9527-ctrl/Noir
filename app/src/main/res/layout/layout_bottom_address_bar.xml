@@ -34,6 +34,17 @@
         android:textColorHint="@color/text_hint"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@id/ivMenu"
+        app:layout_constraintEnd_toStartOf="@id/ivReadingMode"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/ivReadingMode"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:src="@drawable/ic_reading_mode"
+        android:visibility="gone"
+        android:contentDescription="阅读模式"
         app:layout_constraintEnd_toStartOf="@id/ivClear"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

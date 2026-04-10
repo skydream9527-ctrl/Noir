@@ -20,6 +20,7 @@ class BottomAddressBar @JvmOverloads constructor(
     
     var onAddressSubmit: ((String) -> Unit)? = null
     var onMenuClick: (() -> Unit)? = null
+    var onReadingModeClick: (() -> Unit)? = null
     
     init {
         binding = LayoutBottomAddressBarBinding.inflate(LayoutInflater.from(context), this, true)
@@ -47,6 +48,10 @@ class BottomAddressBar @JvmOverloads constructor(
             binding.etAddress.text.clear()
             binding.ivClear.visibility = View.GONE
         }
+
+        binding.ivReadingMode.setOnClickListener {
+            onReadingModeClick?.invoke()
+        }
     }
     
     private fun processInput(input: String): String {
@@ -69,5 +74,9 @@ class BottomAddressBar @JvmOverloads constructor(
     
     fun showClearButton(show: Boolean) {
         binding.ivClear.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    fun showReadingModeButton(show: Boolean) {
+        binding.ivReadingMode.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

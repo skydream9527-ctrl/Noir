@@ -12,4 +12,6 @@
     <string name="tabs">标签页</string>
     <string name="close_all_tabs">关闭全部</string>
     <string name="address_hint">输入网址或搜索</string>
+    <string name="reading_mode">阅读模式</string>
+    <string name="reading_mode_not_available">当前页面不支持阅读模式</string>
 </resources>
