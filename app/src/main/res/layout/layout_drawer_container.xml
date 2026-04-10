@@ -57,6 +57,14 @@
             android:src="@android:drawable/ic_menu_upload"
             android:contentDescription="加速设置"/>
 
+        <ImageView
+            android:id="@+id/ivDownload"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:src="@android:drawable/stat_sys_download"
+            android:contentDescription="下载管理"/>
+
     </LinearLayout>
 
     <View
