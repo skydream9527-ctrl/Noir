@@ -14,6 +14,7 @@ import com.example.browser.Drawer.BookmarksFragment
 import com.example.browser.Drawer.HistoryFragment
 import com.example.browser.Drawer.TabsFragment
 import com.example.browser.AdBlock.AdBlockSettingsFragment
+import com.example.browser.SpeedUp.SpeedUpSettingsFragment
 
 class DrawerController(
     private val activity: FragmentActivity,
@@ -23,6 +24,7 @@ class DrawerController(
     private val ivHistory: ImageView,
     private val ivTabs: ImageView,
     private var ivAdBlock: ImageView? = null,
+    private var ivSpeedUp: ImageView? = null,
     private val onNavigate: (String) -> Unit
 ) {
     
@@ -40,6 +42,10 @@ class DrawerController(
         ivAdBlock = contentContainer.findViewById(R.id.ivAdBlock)
         ivAdBlock?.setOnClickListener {
             showAdBlockSettings()
+        }
+        ivSpeedUp = contentContainer.findViewById(R.id.ivSpeedUp)
+        ivSpeedUp?.setOnClickListener {
+            showSpeedUpSettings()
         }
         showTab(Tab.BOOKMARKS)
     }
@@ -105,7 +111,21 @@ class DrawerController(
         ivTabs?.setColorFilter(Color.GRAY)
         ivAdBlock?.setColorFilter(Color.parseColor("#007AFF"))
     }
-    
+
+    private fun showSpeedUpSettings() {
+        activity.supportFragmentManager.beginTransaction()
+            .replace(R.id.contentContainer, SpeedUpSettingsFragment())
+            .addToBackStack(null)
+            .commit()
+        contentContainer.visibility = View.VISIBLE
+        tabContainer.visibility = View.GONE
+        ivBookmark?.setColorFilter(Color.GRAY)
+        ivHistory?.setColorFilter(Color.GRAY)
+        ivTabs?.setColorFilter(Color.GRAY)
+        ivAdBlock?.setColorFilter(Color.GRAY)
+        ivSpeedUp?.setColorFilter(Color.parseColor("#007AFF"))
+    }
+
     fun refresh() {
         (currentFragment as? TabsFragment)?.refresh()
         (currentFragment as? BookmarksFragment)?.refresh()
