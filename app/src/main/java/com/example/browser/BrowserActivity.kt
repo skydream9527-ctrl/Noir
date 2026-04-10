@@ -4,17 +4,22 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.tencent.smtt.sdk.WebChromeClient
 import com.tencent.smtt.sdk.WebSettings
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
 import com.example.browser.databinding.ActivityBrowserBinding
 
 class BrowserActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBrowserBinding
     private lateinit var webView: WebView
+    private lateinit var tabManager: TabManager
+    
+    private var currentTabId: String? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,30 +27,27 @@ class BrowserActivity : AppCompatActivity() {
         binding = ActivityBrowserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        webView = binding.webView
+        tabManager = TabManager(this)
         
-        setupToolbar()
         setupWebView()
-        setupFab()
+        setupBottomAddressBar()
+        setupDrawerScrim()
         
-        val url = intent.getStringExtra("url")
-        if (!url.isNullOrEmpty()) {
-            webView.loadUrl(url)
-        }
+        loadInitialTab()
     }
-
-    private fun setupToolbar() {
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
+    
+    private fun loadInitialTab() {
+        val tab = tabManager.getActiveTab() ?: tabManager.createNewTab()
+        currentTabId = tab.id
+        if (tab.url.isNotEmpty()) {
+            webView.loadUrl(tab.url)
         }
+        binding.bottomAddressBar.setAddress(tab.url)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
+        webView = binding.webView
         val settings = webView.settings
         
         settings.javaScriptEnabled = true
@@ -57,26 +59,24 @@ class BrowserActivity : AppCompatActivity() {
         settings.domStorageEnabled = true
         settings.cacheMode = WebSettings.LOAD_DEFAULT
         settings.mixedContentMode = 0
-        settings.userAgentString = settings.userAgentString + " BrowserApp/1.0"
 
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(
-                view: WebView?,
-                url: String?
-            ): Boolean {
-                return false
-            }
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean = false
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 binding.progressBar.visibility = View.VISIBLE
                 binding.progressBar.progress = 0
+                url?.let { 
+                    binding.bottomAddressBar.setAddress(it)
+                    currentTabId?.let { tabId -> tabManager.updateTab(tabId, url = it, title = view?.title) }
+                }
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 binding.progressBar.visibility = View.GONE
-                title = view?.title ?: getString(R.string.browser)
+                url?.let { binding.bottomAddressBar.setAddress(it) }
             }
         }
 
@@ -88,17 +88,68 @@ class BrowserActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupFab() {
-        binding.fabHome.setOnClickListener {
-            finish()
+    private fun setupBottomAddressBar() {
+        binding.bottomAddressBar.onAddressSubmit = { url ->
+            webView.loadUrl(url)
         }
+        
+        binding.bottomAddressBar.onMenuClick = {
+            toggleDrawer()
+        }
+    }
+    
+    private fun setupDrawerScrim() {
+        binding.drawerScrim.setOnClickListener {
+            closeDrawer()
+        }
+    }
+    
+    private fun toggleDrawer() {
+        if (binding.drawerContainer.isVisible) {
+            closeDrawer()
+        } else {
+            openDrawer()
+        }
+    }
+    
+    private fun openDrawer() {
+        binding.drawerScrim.visibility = View.VISIBLE
+        binding.drawerContainer.visibility = View.VISIBLE
+        binding.drawerContainer.animate()
+            .translationX(0f)
+            .setDuration(250)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+        binding.drawerScrim.animate()
+            .alpha(1f)
+            .setDuration(250)
+            .start()
+    }
+    
+    private fun closeDrawer() {
+        val drawerWidth = binding.drawerContainer.width.toFloat()
+        binding.drawerContainer.animate()
+            .translationX(drawerWidth)
+            .setDuration(250)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction {
+                binding.drawerContainer.visibility = View.GONE
+            }
+            .start()
+        binding.drawerScrim.animate()
+            .alpha(0f)
+            .setDuration(250)
+            .withEndAction {
+                binding.drawerScrim.visibility = View.GONE
+            }
+            .start()
     }
 
     override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
+        when {
+            binding.drawerContainer.isVisible -> closeDrawer()
+            webView.canGoBack() -> webView.goBack()
+            else -> super.onBackPressed()
         }
     }
 
