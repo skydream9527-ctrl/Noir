@@ -13,8 +13,10 @@ import com.tencent.smtt.sdk.WebSettings
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
 import com.example.browser.AdBlockManager
+import com.example.browser.Download.DownloadManager
 import com.example.browser.SpeedUp.SpeedUpManager
 import com.example.browser.VideoEnhance.VideoEnhanceManager
+import android.webkit.DownloadListener
 import com.example.browser.databinding.ActivityBrowserBinding
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -29,6 +31,7 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var drawerController: DrawerController
     private lateinit var adBlockManager: AdBlockManager
     private lateinit var speedUpManager: SpeedUpManager
+    private lateinit var downloadManager: DownloadManager
     private lateinit var videoEnhanceManager: VideoEnhanceManager
     private lateinit var floatButtonContainer: FrameLayout
     private lateinit var btnPip: ImageButton
@@ -143,6 +146,10 @@ class BrowserActivity : AppCompatActivity() {
                 }
             }
         }
+
+        webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+            downloadManager.download(url, null)
+        }
     }
 
     private fun setupVideoEnhance() {
@@ -240,6 +247,7 @@ class BrowserActivity : AppCompatActivity() {
         
         adBlockManager = AdBlockManager(this)
         speedUpManager = SpeedUpManager(this)
+        downloadManager = DownloadManager(this)
         
         binding.drawerScrim.setOnClickListener {
             closeDrawer()
