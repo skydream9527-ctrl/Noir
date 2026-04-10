@@ -41,6 +41,14 @@
             android:src="@drawable/ic_tabs_outline"
             android:contentDescription="标签页"/>
 
+        <ImageView
+            android:id="@+id/ivAdBlock"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="广告拦截"/>
+
     </LinearLayout>
 
     <View

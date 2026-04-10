@@ -12,6 +12,7 @@ import com.tencent.smtt.sdk.WebChromeClient
 import com.tencent.smtt.sdk.WebSettings
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
+import com.example.browser.AdBlockManager
 import com.example.browser.databinding.ActivityBrowserBinding
 
 class BrowserActivity : AppCompatActivity() {
@@ -20,6 +21,7 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var tabManager: TabManager
     private lateinit var drawerController: DrawerController
+    private lateinit var adBlockManager: AdBlockManager
     
     private var currentTabId: String? = null
 
@@ -63,7 +65,14 @@ class BrowserActivity : AppCompatActivity() {
         settings.mixedContentMode = 0
 
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean = false
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+            url?.let {
+                if (adBlockManager.shouldBlockRequest(it)) {
+                    return true
+                }
+            }
+            return false
+        }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
@@ -78,7 +87,14 @@ class BrowserActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 binding.progressBar.visibility = View.GONE
-                url?.let { binding.bottomAddressBar.setAddress(it) }
+                binding.bottomAddressBar.setAddress(url ?: "")
+                
+                if (adBlockManager.shouldInjectContentScript()) {
+                    val script = adBlockManager.getContentBlockerScript()
+                    if (script.isNotEmpty()) {
+                        view?.evaluateJavascript(script, null)
+                    }
+                }
             }
         }
 
@@ -142,6 +158,8 @@ class BrowserActivity : AppCompatActivity() {
                 closeDrawer()
             }
         )
+        
+        adBlockManager = AdBlockManager(this)
         
         binding.drawerScrim.setOnClickListener {
             closeDrawer()

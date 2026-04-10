@@ -1,6 +1,7 @@
 package com.example.browser
 
 import android.content.Context
+import android.graphics.Color
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -12,6 +13,7 @@ import com.example.browser.data.TabManager
 import com.example.browser.Drawer.BookmarksFragment
 import com.example.browser.Drawer.HistoryFragment
 import com.example.browser.Drawer.TabsFragment
+import com.example.browser.AdBlock.AdBlockSettingsFragment
 
 class DrawerController(
     private val activity: FragmentActivity,
@@ -20,6 +22,7 @@ class DrawerController(
     private val ivBookmark: ImageView,
     private val ivHistory: ImageView,
     private val ivTabs: ImageView,
+    private var ivAdBlock: ImageView? = null,
     private val onNavigate: (String) -> Unit
 ) {
     
@@ -34,6 +37,10 @@ class DrawerController(
     
     init {
         setupTabClicks()
+        ivAdBlock = contentContainer.findViewById(R.id.ivAdBlock)
+        ivAdBlock?.setOnClickListener {
+            showAdBlockSettings()
+        }
         showTab(Tab.BOOKMARKS)
     }
     
@@ -84,6 +91,19 @@ class DrawerController(
         ivBookmark.setColorFilter(if (currentTab == Tab.BOOKMARKS) activeColor else inactiveColor)
         ivHistory.setColorFilter(if (currentTab == Tab.HISTORY) activeColor else inactiveColor)
         ivTabs.setColorFilter(if (currentTab == Tab.TABS) activeColor else inactiveColor)
+    }
+    
+    private fun showAdBlockSettings() {
+        activity.supportFragmentManager.beginTransaction()
+            .replace(R.id.contentContainer, AdBlockSettingsFragment())
+            .addToBackStack(null)
+            .commit()
+        contentContainer.visibility = View.VISIBLE
+        tabContainer.visibility = View.GONE
+        ivBookmark?.setColorFilter(Color.GRAY)
+        ivHistory?.setColorFilter(Color.GRAY)
+        ivTabs?.setColorFilter(Color.GRAY)
+        ivAdBlock?.setColorFilter(Color.parseColor("#007AFF"))
     }
     
     fun refresh() {
