@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="reading_white_bg">#FFFFFFFF</color>
+    <color name="reading_white_text">#FF202124</color>
+    
+    <color name="reading_light_bg">#FFF8F9FA</color>
+    <color name="reading_light_text">#FF202124</color>
+    
+    <color name="reading_dark_bg">#FF121212</color>
+    <color name="reading_dark_text">#FFE8EAED</color>
+    
+    <color name="reading_sepia_bg">#FFF4ECD8</color>
+    <color name="reading_sepia_text">#FF5B4636</color>
+</resources>
