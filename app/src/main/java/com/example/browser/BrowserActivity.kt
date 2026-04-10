@@ -13,7 +13,12 @@ import com.tencent.smtt.sdk.WebSettings
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
 import com.example.browser.AdBlockManager
+import com.example.browser.VideoEnhance.VideoEnhanceManager
 import com.example.browser.databinding.ActivityBrowserBinding
+import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.view.View
+import android.view.animation.AlphaAnimation
 
 class BrowserActivity : AppCompatActivity() {
 
@@ -22,6 +27,9 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var tabManager: TabManager
     private lateinit var drawerController: DrawerController
     private lateinit var adBlockManager: AdBlockManager
+    private lateinit var videoEnhanceManager: VideoEnhanceManager
+    private lateinit var floatButtonContainer: FrameLayout
+    private lateinit var btnPip: ImageButton
     
     private var currentTabId: String? = null
 
@@ -36,6 +44,7 @@ class BrowserActivity : AppCompatActivity() {
         setupWebView()
         setupBottomAddressBar()
         setupDrawer()
+        setupVideoEnhance()
         
         loadInitialTab()
     }
@@ -95,6 +104,15 @@ class BrowserActivity : AppCompatActivity() {
                         view?.evaluateJavascript(script, null)
                     }
                 }
+                
+                if (videoEnhanceManager.isEnabled()) {
+                    val script = videoEnhanceManager.getHasPlayingVideoScript()
+                    webView.evaluateJavascript(script) { result ->
+                        if (result == "true") {
+                            runOnUiThread { showFloatButton() }
+                        }
+                    }
+                }
             }
         }
 
@@ -111,6 +129,53 @@ class BrowserActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun setupVideoEnhance() {
+        videoEnhanceManager = VideoEnhanceManager(this)
+        
+        floatButtonContainer = binding.root.findViewById(R.id.floatButtonContainer)
+        btnPip = binding.root.findViewById(R.id.btnPip)
+        
+        if (!videoEnhanceManager.isPipSupported()) {
+            floatButtonContainer.visibility = View.GONE
+            return
+        }
+        
+        btnPip.setOnClickListener {
+            if (videoEnhanceManager.isInPipMode()) {
+            } else {
+                videoEnhanceManager.enterPipMode()
+            }
+        }
+        
+        videoEnhanceManager.setOnPipEnterListener {
+            hideFloatButton()
+        }
+    }
+
+    private fun showFloatButton() {
+        if (!videoEnhanceManager.isEnabled() || !videoEnhanceManager.isPipSupported()) return
+        if (videoEnhanceManager.isInPipMode()) return
+        if (floatButtonContainer.visibility == View.VISIBLE) return
+        
+        floatButtonContainer.visibility = View.VISIBLE
+        val fadeIn = AlphaAnimation(0f, 1f).apply {
+            duration = 300
+            fillAfter = true
+        }
+        floatButtonContainer.startAnimation(fadeIn)
+    }
+
+    private fun hideFloatButton() {
+        if (floatButtonContainer.visibility != View.VISIBLE) return
+        
+        val fadeOut = AlphaAnimation(1f, 0f).apply {
+            duration = 300
+            fillAfter = true
+        }
+        floatButtonContainer.startAnimation(fadeOut)
+        floatButtonContainer.visibility = View.GONE
     }
 
     private fun setupBottomAddressBar() {
@@ -209,9 +274,24 @@ class BrowserActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         when {
+            videoEnhanceManager.isInPipMode() -> {
+                videoEnhanceManager.enterPipMode()
+            }
             binding.drawerContainer.isVisible -> closeDrawer()
             webView.canGoBack() -> webView.goBack()
             else -> super.onBackPressed()
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (videoEnhanceManager.isEnabled() && videoEnhanceManager.isPipSupported()) {
+            val script = videoEnhanceManager.getHasPlayingVideoScript()
+            webView.evaluateJavascript(script) { result ->
+                if (result == "true") {
+                    videoEnhanceManager.enterPipMode()
+                }
+            }
         }
     }
 
