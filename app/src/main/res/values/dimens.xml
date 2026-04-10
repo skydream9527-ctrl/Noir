@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 圆角 -->
+    <dimen name="corner_radius_large">16dp</dimen>
+    <dimen name="corner_radius_medium">12dp</dimen>
+    <dimen name="corner_radius_small">8dp</dimen>
+    
+    <!-- 间距 -->
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_tiny">4dp</dimen>
+    
+    <!-- 图标尺寸 -->
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="icon_size_large">32dp</dimen>
+    
+    <!-- 底部地址栏 -->
+    <dimen name="bottom_bar_height">56dp</dimen>
+    <dimen name="bottom_bar_margin">12dp</dimen>
+    
+    <!-- 抽屉宽度 -->
+    <dimen name="drawer_width">320dp</dimen>
+    
+    <!-- 标签卡片 -->
+    <dimen name="tab_card_width">140dp</dimen>
+    <dimen name="tab_card_height">180dp</dimen>
+</resources>
