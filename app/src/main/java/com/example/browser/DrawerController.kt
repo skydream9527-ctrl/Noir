@@ -112,9 +112,9 @@ class DrawerController(
             .commit()
         contentContainer.visibility = View.VISIBLE
         tabContainer.visibility = View.GONE
-        ivBookmark?.setColorFilter(Color.GRAY)
-        ivHistory?.setColorFilter(Color.GRAY)
-        ivTabs?.setColorFilter(Color.GRAY)
+        ivBookmark.setColorFilter(Color.GRAY)
+        ivHistory.setColorFilter(Color.GRAY)
+        ivTabs.setColorFilter(Color.GRAY)
         ivAdBlock?.setColorFilter(Color.parseColor("#007AFF"))
     }
 
@@ -141,9 +141,9 @@ class DrawerController(
     }
 
     private fun resetNavIconColors() {
-        ivBookmark?.setColorFilter(Color.GRAY)
-        ivHistory?.setColorFilter(Color.GRAY)
-        ivTabs?.setColorFilter(Color.GRAY)
+        ivBookmark.setColorFilter(Color.GRAY)
+        ivHistory.setColorFilter(Color.GRAY)
+        ivTabs.setColorFilter(Color.GRAY)
         ivAdBlock?.setColorFilter(Color.GRAY)
         ivSpeedUp?.setColorFilter(Color.GRAY)
     }
