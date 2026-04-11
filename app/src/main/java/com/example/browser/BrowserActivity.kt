@@ -46,6 +46,10 @@ class BrowserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         tabManager = TabManager(this)
+        adBlockManager = AdBlockManager(this)
+        speedUpManager = SpeedUpManager(this)
+        downloadManager = DownloadManager(this)
+        videoEnhanceManager = VideoEnhanceManager(this)
         
         setupWebView()
         setupBottomAddressBar()
@@ -242,10 +246,6 @@ class BrowserActivity : AppCompatActivity() {
                 closeDrawer()
             }
         )
-        
-        adBlockManager = AdBlockManager(this)
-        speedUpManager = SpeedUpManager(this)
-        downloadManager = DownloadManager(this)
         
         binding.drawerScrim.setOnClickListener {
             closeDrawer()
