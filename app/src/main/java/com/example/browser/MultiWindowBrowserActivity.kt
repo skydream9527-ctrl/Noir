@@ -327,29 +327,37 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
             
-            val settings = this.settings
-            settings.javaScriptEnabled = true
-            settings.setSupportZoom(true)
-            settings.builtInZoomControls = true
-            settings.displayZoomControls = false
-            settings.useWideViewPort = true
-            settings.loadWithOverviewMode = true
-            settings.domStorageEnabled = true
-            settings.databaseEnabled = true
-            settings.cacheMode = WebSettings.LOAD_DEFAULT
-            settings.mixedContentMode = 0
-            settings.allowFileAccess = true
-            settings.allowContentAccess = true
-            settings.blockNetworkImage = false
-            settings.loadsImagesAutomatically = true
-            settings.javaScriptCanOpenWindowsAutomatically = true
-            settings.setSupportMultipleWindows(true)
-            settings.userAgentString = settings.userAgentString
-            
-            setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            
-            com.tencent.smtt.sdk.CookieManager.getInstance().setAcceptCookie(true)
-            com.tencent.smtt.sdk.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+            try {
+                val settings = this.settings
+                settings.javaScriptEnabled = true
+                settings.setSupportZoom(true)
+                settings.builtInZoomControls = true
+                settings.displayZoomControls = false
+                settings.useWideViewPort = true
+                settings.loadWithOverviewMode = true
+                settings.domStorageEnabled = true
+                settings.databaseEnabled = true
+                settings.cacheMode = WebSettings.LOAD_DEFAULT
+                settings.mixedContentMode = 0
+                settings.allowFileAccess = true
+                settings.allowContentAccess = true
+                settings.blockNetworkImage = false
+                settings.loadsImagesAutomatically = true
+                settings.javaScriptCanOpenWindowsAutomatically = true
+                settings.setSupportMultipleWindows(true)
+                settings.userAgentString = settings.userAgentString
+                
+                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+                
+                try {
+                    com.tencent.smtt.sdk.CookieManager.getInstance().setAcceptCookie(true)
+                    com.tencent.smtt.sdk.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
@@ -800,12 +808,15 @@ class MultiWindowBrowserActivity : AppCompatActivity() {
     
     override fun onDestroy() {
         super.onDestroy()
-        // 清理所有WebView
-        webViews.values.forEach { webView ->
-            webView.stopLoading()
-            webView.destroy()
+        try {
+            webViews.values.forEach { webView ->
+                webView.stopLoading()
+                webView.destroy()
+            }
+            webViews.clear()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        webViews.clear()
     }
     
     enum class TabAction {

@@ -60,108 +60,127 @@ class BrowserActivity : AppCompatActivity() {
     }
     
     private fun loadInitialTab() {
-        val tab = tabManager.getActiveTab() ?: tabManager.createNewTab()
-        currentTabId = tab.id
-        if (tab.url.isNotEmpty()) {
-            webView.loadUrl(tab.url)
+        try {
+            val tab = tabManager.getActiveTab() ?: tabManager.createNewTab()
+            currentTabId = tab.id
+            if (tab.url.isNotEmpty()) {
+                webView.loadUrl(tab.url)
+            }
+            binding.bottomAddressBar.setAddress(tab.url)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        binding.bottomAddressBar.setAddress(tab.url)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
-        webView = binding.webView
-        val settings = webView.settings
-        
-        settings.javaScriptEnabled = true
-        settings.setSupportZoom(true)
-        settings.builtInZoomControls = true
-        settings.displayZoomControls = false
-        settings.useWideViewPort = true
-        settings.loadWithOverviewMode = true
-        settings.domStorageEnabled = true
-        settings.cacheMode = WebSettings.LOAD_DEFAULT
-        settings.mixedContentMode = 0
+        try {
+            webView = binding.webView
+            val settings = webView.settings
+            
+            settings.javaScriptEnabled = true
+            settings.setSupportZoom(true)
+            settings.builtInZoomControls = true
+            settings.displayZoomControls = false
+            settings.useWideViewPort = true
+            settings.loadWithOverviewMode = true
+            settings.domStorageEnabled = true
+            settings.cacheMode = WebSettings.LOAD_DEFAULT
+            settings.mixedContentMode = 0
 
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            url?.let {
-                if (adBlockManager.shouldBlockRequest(it)) {
-                    return true
-                }
-            }
-            return false
-        }
-
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                super.onPageStarted(view, url, favicon)
-                binding.progressBar.visibility = View.VISIBLE
-                binding.progressBar.progress = 0
-                url?.let { 
-                    binding.bottomAddressBar.setAddress(it)
-                    currentTabId?.let { tabId -> tabManager.updateTab(tabId, url = it, title = view?.title) }
-                }
-            }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                binding.progressBar.visibility = View.GONE
-                binding.bottomAddressBar.setAddress(url ?: "")
-                
-                if (adBlockManager.shouldInjectContentScript()) {
-                    val script = adBlockManager.getContentBlockerScript()
-                    if (script.isNotEmpty()) {
-                        view?.evaluateJavascript(script, null)
-                    }
-                }
-                
-                if (videoEnhanceManager.isEnabled()) {
-                    val script = videoEnhanceManager.getHasPlayingVideoScript()
-                    webView.evaluateJavascript(script) { result ->
-                        if (result == "true") {
-                            runOnUiThread { showFloatButton() }
+            webView.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                    try {
+                        url?.let {
+                            if (adBlockManager.shouldBlockRequest(it)) {
+                                return true
+                            }
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    return false
+                }
+
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.progressBar.progress = 0
+                    url?.let { 
+                        binding.bottomAddressBar.setAddress(it)
+                        currentTabId?.let { tabId -> tabManager.updateTab(tabId, url = it, title = view?.title) }
                     }
                 }
 
-                if (speedUpManager.shouldInjectAccelerationScript()) {
-                    val dnsScript = speedUpManager.getDnsPrefetchScript()
-                    val preloadScript = speedUpManager.getPreloadScript()
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    binding.progressBar.visibility = View.GONE
+                    binding.bottomAddressBar.setAddress(url ?: "")
                     
-                    if (dnsScript.isNotEmpty()) {
-                        webView.evaluateJavascript(dnsScript, null)
-                    }
-                    if (preloadScript.isNotEmpty()) {
-                        webView.evaluateJavascript(preloadScript, null)
+                    try {
+                        if (adBlockManager.shouldInjectContentScript()) {
+                            val script = adBlockManager.getContentBlockerScript()
+                            if (script.isNotEmpty()) {
+                                view?.evaluateJavascript(script, null)
+                            }
+                        }
+                        
+                        if (videoEnhanceManager.isEnabled()) {
+                            val script = videoEnhanceManager.getHasPlayingVideoScript()
+                            webView.evaluateJavascript(script) { result ->
+                                if (result == "true") {
+                                    runOnUiThread { showFloatButton() }
+                                }
+                            }
+                        }
+
+                        if (speedUpManager.shouldInjectAccelerationScript()) {
+                            val dnsScript = speedUpManager.getDnsPrefetchScript()
+                            val preloadScript = speedUpManager.getPreloadScript()
+                            
+                            if (dnsScript.isNotEmpty()) {
+                                webView.evaluateJavascript(dnsScript, null)
+                            }
+                            if (preloadScript.isNotEmpty()) {
+                                webView.evaluateJavascript(preloadScript, null)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
             }
-        }
 
-        webView.webChromeClient = object : WebChromeClient() {
-            override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                super.onProgressChanged(view, newProgress)
-                binding.progressBar.progress = newProgress
-            }
+            webView.webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    super.onProgressChanged(view, newProgress)
+                    binding.progressBar.progress = newProgress
+                }
 
-            override fun onReceivedTitle(view: WebView?, title: String?) {
-                super.onReceivedTitle(view, title)
-                title?.let {
-                    binding.bottomAddressBar.showReadingModeButton(it.isNotEmpty())
+                override fun onReceivedTitle(view: WebView?, title: String?) {
+                    super.onReceivedTitle(view, title)
+                    title?.let {
+                        binding.bottomAddressBar.showReadingModeButton(it.isNotEmpty())
+                    }
                 }
             }
-        }
 
-        webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
-            downloadManager.download(url, null)
+            webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+                try {
+                    downloadManager.download(url, null)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            finish()
         }
     }
 
     private fun setupVideoEnhance() {
-        videoEnhanceManager = VideoEnhanceManager(this)
-        
-        floatButtonContainer = binding.root.findViewById(R.id.floatButtonContainer)
-        btnPip = binding.root.findViewById(R.id.btnPip)
+        floatButtonContainer = binding.videoFloatButton.root.findViewById(R.id.floatButtonContainer)
+        btnPip = binding.videoFloatButton.root.findViewById(R.id.btnPip)
         
         if (!videoEnhanceManager.isPipSupported()) {
             floatButtonContainer.visibility = View.GONE
@@ -219,15 +238,19 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     private fun startReadingMode() {
-        webView.evaluateJavascript(
-            "(function() { return '<html>' + document.getElementsByTagName('html')[0].innerHTML + '</html>'; })();"
-        ) { html ->
-            if (html.isNotEmpty() && html.length > 100) {
-                val intent = Intent(this, ReadingModeActivity::class.java)
-                intent.putExtra(ReadingModeActivity.EXTRA_HTML, html)
-                intent.putExtra(ReadingModeActivity.EXTRA_URL, webView.url ?: "")
-                startActivity(intent)
+        try {
+            webView.evaluateJavascript(
+                "(function() { return '<html>' + document.getElementsByTagName('html')[0].innerHTML + '</html>'; })();"
+            ) { html ->
+                if (html.isNotEmpty() && html.length > 100) {
+                    val intent = Intent(this, ReadingModeActivity::class.java)
+                    intent.putExtra(ReadingModeActivity.EXTRA_HTML, html)
+                    intent.putExtra(ReadingModeActivity.EXTRA_URL, webView.url ?: "")
+                    startActivity(intent)
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
     
@@ -263,11 +286,13 @@ class BrowserActivity : AppCompatActivity() {
     private fun openDrawer() {
         binding.drawerScrim.visibility = View.VISIBLE
         binding.drawerContainer.root.visibility = View.VISIBLE
+        binding.drawerContainer.root.translationX = binding.drawerContainer.root.width.toFloat()
         binding.drawerContainer.root.animate()
             .translationX(0f)
             .setDuration(250)
             .setInterpolator(AccelerateDecelerateInterpolator())
             .start()
+        binding.drawerScrim.alpha = 0f
         binding.drawerScrim.animate()
             .alpha(1f)
             .setDuration(250)
@@ -294,40 +319,60 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        when {
-            videoEnhanceManager.isInPipMode() -> {
-                videoEnhanceManager.enterPipMode()
+        try {
+            when {
+                videoEnhanceManager.isInPipMode() -> {
+                    videoEnhanceManager.enterPipMode()
+                }
+                binding.drawerContainer.root.isVisible -> closeDrawer()
+                webView.canGoBack() -> webView.goBack()
+                else -> super.onBackPressed()
             }
-            binding.drawerContainer.root.isVisible -> closeDrawer()
-            webView.canGoBack() -> webView.goBack()
-            else -> super.onBackPressed()
+        } catch (e: Exception) {
+            super.onBackPressed()
         }
     }
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        if (videoEnhanceManager.isEnabled() && videoEnhanceManager.isPipSupported()) {
-            val script = videoEnhanceManager.getHasPlayingVideoScript()
-            webView.evaluateJavascript(script) { result ->
-                if (result == "true") {
-                    videoEnhanceManager.enterPipMode()
+        try {
+            if (videoEnhanceManager.isEnabled() && videoEnhanceManager.isPipSupported()) {
+                val script = videoEnhanceManager.getHasPlayingVideoScript()
+                webView.evaluateJavascript(script) { result ->
+                    if (result == "true") {
+                        videoEnhanceManager.enterPipMode()
+                    }
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        webView.onPause()
+        try {
+            webView.onPause()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        webView.onResume()
+        try {
+            webView.onResume()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroy() {
-        webView.destroy()
+        try {
+            webView.destroy()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         super.onDestroy()
     }
 }
