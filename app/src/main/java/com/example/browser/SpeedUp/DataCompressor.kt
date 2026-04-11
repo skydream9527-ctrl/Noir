@@ -1,6 +1,6 @@
 package com.example.browser.SpeedUp
 
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -48,7 +48,7 @@ class DataCompressor(
             else -> content
         }
         
-        return compressedContent.toResponseBody(contentType?.let { MediaType.parse(it) })
+        return compressedContent.toResponseBody(contentType?.toMediaType())
     }
     
     private fun minifyJs(js: String): String {

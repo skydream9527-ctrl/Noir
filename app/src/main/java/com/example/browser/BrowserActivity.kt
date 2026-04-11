@@ -20,6 +20,7 @@ import android.webkit.DownloadListener
 import com.example.browser.databinding.ActivityBrowserBinding
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.view.animation.AlphaAnimation
 import com.example.browser.data.TabManager
 
@@ -227,18 +228,15 @@ class BrowserActivity : AppCompatActivity() {
     }
     
     private fun setupDrawer() {
-        val contentContainer = binding.drawerContainer.findViewById<android.widget.FrameLayout>(R.id.contentContainer)
-        val ivBookmark = binding.drawerContainer.findViewById<android.widget.ImageView>(R.id.ivBookmark)
-        val ivHistory = binding.drawerContainer.findViewById<android.widget.ImageView>(R.id.ivHistory)
-        val ivTabs = binding.drawerContainer.findViewById<android.widget.ImageView>(R.id.ivTabs)
+        val rootLayout = binding.drawerContainer.root
         
         drawerController = DrawerController(
             activity = this,
-            tabContainer = binding.drawerContainer.findViewById(R.id.tabContainer),
-            contentContainer = contentContainer!!,
-            ivBookmark = ivBookmark!!,
-            ivHistory = ivHistory!!,
-            ivTabs = ivTabs!!,
+            tabContainer = rootLayout.findViewById<View>(R.id.tabContainer),
+            contentContainer = rootLayout.findViewById<FrameLayout>(R.id.contentContainer),
+            ivBookmark = rootLayout.findViewById<ImageView>(R.id.ivBookmark),
+            ivHistory = rootLayout.findViewById<ImageView>(R.id.ivHistory),
+            ivTabs = rootLayout.findViewById<ImageView>(R.id.ivTabs),
             onNavigate = { url ->
                 webView.loadUrl(url)
                 closeDrawer()
@@ -255,7 +253,7 @@ class BrowserActivity : AppCompatActivity() {
     }
     
     private fun toggleDrawer() {
-        if (binding.drawerContainer.isVisible) {
+        if (binding.drawerContainer.root.isVisible) {
             closeDrawer()
         } else {
             openDrawer()
@@ -264,8 +262,8 @@ class BrowserActivity : AppCompatActivity() {
     
     private fun openDrawer() {
         binding.drawerScrim.visibility = View.VISIBLE
-        binding.drawerContainer.visibility = View.VISIBLE
-        binding.drawerContainer.animate()
+        binding.drawerContainer.root.visibility = View.VISIBLE
+        binding.drawerContainer.root.animate()
             .translationX(0f)
             .setDuration(250)
             .setInterpolator(AccelerateDecelerateInterpolator())
@@ -277,13 +275,13 @@ class BrowserActivity : AppCompatActivity() {
     }
     
     private fun closeDrawer() {
-        val drawerWidth = binding.drawerContainer.width.toFloat()
-        binding.drawerContainer.animate()
+        val drawerWidth = binding.drawerContainer.root.width.toFloat()
+        binding.drawerContainer.root.animate()
             .translationX(drawerWidth)
             .setDuration(250)
             .setInterpolator(AccelerateDecelerateInterpolator())
             .withEndAction {
-                binding.drawerContainer.visibility = View.GONE
+                binding.drawerContainer.root.visibility = View.GONE
             }
             .start()
         binding.drawerScrim.animate()
@@ -300,7 +298,7 @@ class BrowserActivity : AppCompatActivity() {
             videoEnhanceManager.isInPipMode() -> {
                 videoEnhanceManager.enterPipMode()
             }
-            binding.drawerContainer.isVisible -> closeDrawer()
+            binding.drawerContainer.root.isVisible -> closeDrawer()
             webView.canGoBack() -> webView.goBack()
             else -> super.onBackPressed()
         }

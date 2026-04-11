@@ -25,8 +25,8 @@ class DrawerController(
     private val ivHistory: ImageView,
     private val ivTabs: ImageView,
     private var ivAdBlock: ImageView? = null,
-    private var ivSpeedUp: ImageView? = null
-    private var ivDownload: ImageView? = null
+    private var ivSpeedUp: ImageView? = null,
+    private var ivDownload: ImageView? = null,
     private val onNavigate: (String) -> Unit
 ) {
     
