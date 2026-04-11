@@ -16,10 +16,10 @@ class DownloadTask(
     private var currentJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     
-    data class ProgressCallback(
-        val onProgress: (Long, Long) -> Unit,
-        val onComplete: (Boolean, String?) -> Unit
-    )
+    interface ProgressCallback {
+        fun onProgress(downloaded: Long, total: Long)
+        fun onComplete(success: Boolean, error: String?)
+    }
     
     fun startDownload(item: DownloadItem, callback: ProgressCallback) {
         currentJob = scope.launch {
