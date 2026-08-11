@@ -1,0 +1,14 @@
+##.ad-container
+##.advertisement
+##.ad-wrapper
+##.ad-banner
+###banner-ad
+##[class*="ad-"]
+##[id*="ad-"]
+##.sidebar-ad
+##.footer-ad
+##.header-ad
+##[class*="advertisement"]
+##[id*="advertisement"]
+##[class*="google-ad"]
+##[id*="google-ad"]

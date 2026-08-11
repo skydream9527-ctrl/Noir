@@ -7,6 +7,8 @@ import {
   resolveQueryToUrl,
   getDomain,
   prettyUrl,
+  isFrameBlocked,
+  getEngineDefaultSearchUrl,
 } from "./url.ts";
 
 test("isUrl", () => {
@@ -58,4 +60,28 @@ test("getDomain", () => {
 test("prettyUrl", () => {
   assert.equal(prettyUrl("https://www.baidu.com/"), "www.baidu.com");
   assert.equal(prettyUrl("http://example.com/path/"), "example.com/path");
+});
+
+test("isFrameBlocked", () => {
+  assert.equal(isFrameBlocked("https://www.baidu.com"), true);
+  assert.equal(isFrameBlocked("https://bilibili.com"), true);
+  assert.equal(isFrameBlocked("https://search.bilibili.com/all"), true);
+  assert.equal(isFrameBlocked("https://example.com"), false);
+  assert.equal(isFrameBlocked("https://my-personal-blog.netlify.app"), false);
+});
+
+test("getEngineDefaultSearchUrl", () => {
+  assert.equal(
+    getEngineDefaultSearchUrl("百度"),
+    "https://www.baidu.com/s?wd=",
+  );
+  assert.equal(
+    getEngineDefaultSearchUrl("必应"),
+    "https://www.bing.com/search?q=",
+  );
+  // 未知引擎回退到百度
+  assert.equal(
+    getEngineDefaultSearchUrl("不存在"),
+    "https://www.baidu.com/s?wd=",
+  );
 });

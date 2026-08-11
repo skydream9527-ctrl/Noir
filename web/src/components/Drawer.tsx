@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bookmark,
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useBookmarksStore } from "@/store/useBookmarksStore";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { getFaviconUrl, prettyUrl } from "@/utils/url";
 
 type Panel = "bookmarks" | "history" | "favorites";
@@ -26,6 +27,7 @@ type Props = {
 export default function Drawer({ open, onClose, onNavigate }: Props) {
   const [panel, setPanel] = useState<Panel>("bookmarks");
   const [q, setQ] = useState("");
+  const asideRef = useRef<HTMLElement>(null);
 
   const bookmarks = useBookmarksStore((s) => s.items);
   const history = useHistoryStore((s) => s.items);
@@ -46,6 +48,24 @@ export default function Drawer({ open, onClose, onNavigate }: Props) {
       )
     : list;
 
+  // Esc 关闭抽屉
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    }
+    // 使用捕获阶段，确保在 AddressBar 的 Esc 处理之前触发
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  }, [open, onClose]);
+
+  // 焦点陷阱：打开时聚焦内部，Tab 在抽屉内循环
+  useFocusTrap(asideRef, open);
+
   return (
     <AnimatePresence>
       {open && (
@@ -56,13 +76,18 @@ export default function Drawer({ open, onClose, onNavigate }: Props) {
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm"
+            aria-hidden="true"
           />
           <motion.aside
+            ref={asideRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 26, stiffness: 240 }}
             className="fixed right-0 top-0 z-40 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-ink-900/95 backdrop-blur-2xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label="我的库"
           >
             {/* 头部 */}
             <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">

@@ -10,17 +10,17 @@ export default {
     extend: {
       colors: {
         ink: {
-          950: "#090d16",
-          900: "#0f172a",
-          800: "#1e293b",
-          700: "#334155",
-          600: "#475569",
-          500: "#64748b",
-          400: "#94a3b8",
-          300: "#cbd5e1",
-          200: "#e2e8f0",
-          100: "#f1f5f9",
-          50: "#f8fafc",
+          950: "var(--ink-950)",
+          900: "var(--ink-900)",
+          800: "var(--ink-800)",
+          700: "var(--ink-700)",
+          600: "var(--ink-600)",
+          500: "var(--ink-500)",
+          400: "var(--ink-400)",
+          300: "var(--ink-300)",
+          200: "var(--ink-200)",
+          100: "var(--ink-100)",
+          50: "var(--ink-50)",
         },
         neon: {
           pink: "#ec4899",
@@ -47,8 +47,12 @@ export default {
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E\")",
       },
       animation: {
-        "fade-in": "fadeIn 0.6s ease forwards",
-        "fade-up": "fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "fade-in": "fadeIn 0.6s ease both",
+        "fade-up": "fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "fade-in-up": "fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "scale-in": "scaleIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "slide-in-right": "slideInRight 0.3s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "progress-slide": "progressSlide 1.2s ease-in-out infinite",
         "blob-drift": "blobDrift 18s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",
       },
@@ -60,6 +64,22 @@ export default {
         fadeUp: {
           "0%": { opacity: "0", transform: "translateY(16px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        scaleIn: {
+          "0%": { opacity: "0", transform: "scale(0.92)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        slideInRight: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" },
+        },
+        progressSlide: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
         },
         blobDrift: {
           "0%, 100%": { transform: "translate(0, 0) scale(1)" },

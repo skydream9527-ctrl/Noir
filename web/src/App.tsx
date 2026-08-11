@@ -5,8 +5,8 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import Background from "@/components/Background";
+import { OnboardingGate } from "@/components/OnboardingOverlay";
 import Home from "@/pages/Home";
 import Browser from "@/pages/Browser";
 import Reading from "@/pages/Reading";
@@ -19,26 +19,17 @@ function AnimatedRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        className="h-full"
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/browser" element={<Browser />} />
-          <Route path="/reading" element={<Reading />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+    <div key={location.pathname} className="h-full animate-fade-in-up">
+      <Routes location={location}>
+        <Route path="/" element={<Home />} />
+        <Route path="/browser" element={<Browser />} />
+        <Route path="/reading" element={<Reading />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="*" element={<Home />} />
+      </Routes>
+    </div>
   );
 }
 
@@ -57,9 +48,15 @@ export default function App() {
     <Router>
       <ThemeApplier />
       <Background />
+      <a href="#main-content" className="skip-link">
+        跳到主内容
+      </a>
       <div className="relative h-full">
-        <AnimatedRoutes />
+        <main id="main-content" className="h-full">
+          <AnimatedRoutes />
+        </main>
       </div>
+      <OnboardingGate />
     </Router>
   );
 }

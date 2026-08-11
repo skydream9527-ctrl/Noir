@@ -1,0 +1,14 @@
+{
+  "name": "noir-proxy",
+  "version": "0.0.1",
+  "private": true,
+  "main": "proxy.ts",
+  "scripts": {
+    "dev": "wrangler dev proxy.ts --port 8787",
+    "deploy": "wrangler deploy proxy.ts --name noir-proxy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240614.0",
+    "wrangler": "^3.60.0"
+  }
+}

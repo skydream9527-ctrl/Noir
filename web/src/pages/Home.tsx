@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Sparkles, BookOpen, Settings as SettingsIcon } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import QuickAccess from "@/components/QuickAccess";
@@ -42,12 +41,7 @@ export default function Home() {
           </div>
 
           {/* Logo 区 */}
-          <motion.div
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-12 text-center sm:mt-20"
-          >
+          <div className="mt-12 animate-fade-up text-center sm:mt-20">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ink-300">
               <Sparkles size={12} className="text-neon-pink" />
               <span>Dark Aesthetics · 暗黑美学</span>
@@ -59,24 +53,20 @@ export default function Home() {
             <p className="mx-auto mt-4 max-w-md text-balance text-sm text-ink-400 sm:text-base">
               极简暗黑美学的多标签浏览器，聚合常用搜索与内容站点入口
             </p>
-          </motion.div>
+          </div>
 
           {/* 搜索框 */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mt-10 w-full max-w-2xl"
+          <div
+            className="mx-auto mt-10 w-full max-w-2xl animate-fade-up"
+            style={{ animationDelay: "0.15s" }}
           >
             <SearchBar onNavigate={openUrl} autoFocus />
-          </motion.div>
+          </div>
 
           {/* 快捷入口 */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mt-12"
+          <div
+            className="mt-12 animate-fade-up"
+            style={{ animationDelay: "0.3s" }}
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-ink-400">
@@ -87,14 +77,12 @@ export default function Home() {
               </span>
             </div>
             <QuickAccess onOpen={openUrl} />
-          </motion.div>
+          </div>
 
           {/* 特性卡 */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.6 }}
-            className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-3"
+          <div
+            className="mt-12 grid animate-fade-up grid-cols-1 gap-3 sm:grid-cols-3"
+            style={{ animationDelay: "0.45s" }}
           >
             <FeatureCard
               title="多标签浏览"

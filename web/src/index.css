@@ -11,6 +11,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* 深色主题（默认）：ink 色阶从深到浅 */
+  --ink-950: #090d16;
+  --ink-900: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --ink-300: #cbd5e1;
+  --ink-200: #e2e8f0;
+  --ink-100: #f1f5f9;
+  --ink-50: #f8fafc;
+
+  /* white/opacity 工具类在深色模式下的含义：白色 + 透明度 */
+  --opacity-tint: 255 255 255;
 }
 
 html,
@@ -21,29 +37,48 @@ body,
 
 body {
   margin: 0;
-  background: #090d16;
-  color: #f8fafc;
+  background: var(--ink-950);
+  color: var(--ink-100);
   overflow: hidden;
 }
 
-/* 主题：护眼 */
-html.sepia body {
-  background: #1a1410;
-  color: #f5ecd9;
-}
-html.sepia {
-  --reading-bg: #221a13;
-  --reading-text: #e8dcc0;
-}
-
-/* 主题：浅色 */
-html.light body {
-  background: #f1f5f9;
-  color: #0f172a;
-}
+/* 主题：浅色 —— 色阶反转，950 变最浅、50 变最深 */
 html.light {
+  color-scheme: light;
+  --ink-950: #f8fafc;
+  --ink-900: #f1f5f9;
+  --ink-800: #e2e8f0;
+  --ink-700: #cbd5e1;
+  --ink-600: #94a3b8;
+  --ink-500: #64748b;
+  --ink-400: #475569;
+  --ink-300: #334155;
+  --ink-200: #1e293b;
+  --ink-100: #0f172a;
+  --ink-50: #090d16;
+  /* white/opacity → black/opacity */
+  --opacity-tint: 0 0 0;
   --reading-bg: #ffffff;
   --reading-text: #1e293b;
+}
+
+/* 主题：护眼 —— 暖棕色调 */
+html.sepia {
+  color-scheme: dark;
+  --ink-950: #1a1410;
+  --ink-900: #221a13;
+  --ink-800: #2d2419;
+  --ink-700: #3d3025;
+  --ink-600: #5a4a3a;
+  --ink-500: #7a6850;
+  --ink-400: #a39882;
+  --ink-300: #c4b896;
+  --ink-200: #d9cca8;
+  --ink-100: #e8dcc0;
+  --ink-50: #f5ecd9;
+  --opacity-tint: 255 255 255;
+  --reading-bg: #221a13;
+  --reading-text: #e8dcc0;
 }
 
 /* 滚动条 */
@@ -60,6 +95,38 @@ html.light {
 }
 *::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.45);
+}
+
+/* 键盘聚焦可见样式：仅在使用键盘导航时显示轮廓 */
+:focus-visible {
+  outline: 2px solid #ec4899;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* 鼠标点击不触发聚焦轮廓 */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 跳过链接：默认隐藏，聚焦时显现 */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+  padding: 8px 14px;
+  background: #ec4899;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px -8px rgba(236, 72, 153, 0.6);
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: none;
 }
 
 @layer components {
@@ -145,3 +212,31 @@ html.light {
   overflow-x: auto;
 }
 .reading-content pre code { padding: 0; background: transparent; }
+
+/*
+ * 浅色模式：覆盖 white/opacity 工具类
+ * 深色模式下 white/N 表示白色透明度（在深色背景上显亮）；
+ * 浅色模式下需要改为黑色透明度（在浅色背景上显暗）。
+ * 这些规则在 Tailwind 工具类之后，且选择器特异性更高（html.light 前缀）。
+ */
+html.light .border-white\/5,
+html.light .hover\:border-white\/5:hover { border-color: rgb(0 0 0 / 0.08); }
+html.light .border-white\/10,
+html.light .hover\:border-white\/10:hover { border-color: rgb(0 0 0 / 0.12); }
+html.light .border-white\/15 { border-color: rgb(0 0 0 / 0.15); }
+html.light .bg-white\/5,
+html.light .hover\:bg-white\/5:hover { background-color: rgb(0 0 0 / 0.04); }
+html.light .bg-white\/10,
+html.light .hover\:bg-white\/10:hover { background-color: rgb(0 0 0 / 0.06); }
+html.light .bg-white\/\[0\.02\] { background-color: rgb(0 0 0 / 0.02); }
+html.light .bg-white\/\[0\.05\],
+html.light .hover\:bg-white\/\[0\.05\]:hover { background-color: rgb(0 0 0 / 0.04); }
+html.light .divide-white\/5 > * { border-color: rgb(0 0 0 / 0.08); }
+
+/* 阅读模式正文颜色随主题 */
+.reading-content {
+  color: var(--reading-text, var(--ink-100));
+}
+.reading-content code {
+  background: rgba(148, 163, 184, 0.18);
+}

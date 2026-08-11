@@ -1,0 +1,6 @@
+name = "noir-proxy"
+main = "proxy.ts"
+compatibility_date = "2024-06-14"
+
+[vars]
+ALLOWED_ORIGINS = "http://localhost:5173,https://noir.local"

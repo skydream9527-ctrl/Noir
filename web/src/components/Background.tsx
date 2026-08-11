@@ -10,13 +10,14 @@ export default function Background() {
   if (theme === "light") {
     return (
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-ink-100 via-white to-ink-200" />
+        {/* 浅色模式：ink-950/900 在 light 主题下是最浅的色阶 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-ink-950 via-white to-ink-900" />
         <div
-          className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full opacity-30 blur-3xl animate-blob-drift"
+          className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full opacity-20 blur-3xl animate-blob-drift"
           style={{ background: "radial-gradient(circle, #ec4899, transparent 70%)" }}
         />
         <div
-          className="absolute top-1/3 -right-40 h-[480px] w-[480px] rounded-full opacity-25 blur-3xl animate-blob-drift"
+          className="absolute top-1/3 -right-40 h-[480px] w-[480px] rounded-full opacity-15 blur-3xl animate-blob-drift"
           style={{
             background: "radial-gradient(circle, #38bdf8, transparent 70%)",
             animationDelay: "-6s",

@@ -5,6 +5,7 @@ import {
   Search,
   ShieldOff,
   Gauge,
+  Globe,
   Sun,
   Moon,
   BookOpen,
@@ -18,6 +19,7 @@ import { useBookmarksStore } from "@/store/useBookmarksStore";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
 import { useTabsStore } from "@/store/useTabsStore";
+import { getRulesCount } from "@/utils/adblock";
 import { cn } from "@/lib/utils";
 import BottomNav from "@/components/BottomNav";
 
@@ -96,15 +98,32 @@ export default function Settings() {
             </Row>
           </Section>
 
-          {/* 增强（演示） */}
-          <Section title="浏览增强（UI 演示）" icon={Gauge}>
+          {/* 广告拦截 */}
+          <Section title="广告拦截" icon={ShieldOff}>
             <ToggleRow
-              label="广告拦截"
-              desc="Web 端无法实际拦截 iframe 内广告，此处为 UI 演示开关"
+              label="启用广告拦截"
+              desc="拦截广告/追踪域名的顶层导航；阅读模式抓取时移除广告 DOM 元素"
               icon={ShieldOff}
               checked={s.adBlockEnabled}
               onToggle={s.toggleAdBlock}
             />
+            <Row
+              label="规则统计"
+              desc="复用原 Android 项目的 EasyList 子集规则"
+            >
+              <span className="font-mono text-xs text-ink-300">
+                DNS {getRulesCount().dns} · CSS {getRulesCount().cosmetic}
+              </span>
+            </Row>
+            <div className="px-3 py-2 text-xs text-ink-500">
+              <p>
+                顶层导航命中黑名单时阻止加载并提示；阅读模式在解析 HTML 前先用 CSS 选择器移除广告元素；启用代理后，代理服务器还会在 HTML 响应中注入隐藏样式表。
+              </p>
+            </div>
+          </Section>
+
+          {/* 增强（演示） */}
+          <Section title="浏览增强（UI 演示）" icon={Gauge}>
             <ToggleRow
               label="网页加速"
               desc="原 Android 端基于 WebView 的数据压缩能力，Web 端不适用"
@@ -112,6 +131,33 @@ export default function Settings() {
               checked={s.speedUpEnabled}
               onToggle={s.toggleSpeedUp}
             />
+          </Section>
+
+          {/* 代理 */}
+          <Section title="代理服务" icon={Globe}>
+            <ToggleRow
+              label="启用嵌入代理"
+              desc="通过本地或部署的代理转发请求，移除 X-Frame-Options，让被拦截站点可在 iframe 中显示"
+              icon={Globe}
+              checked={s.proxyEnabled}
+              onToggle={() => s.setProxyEnabled(!s.proxyEnabled)}
+            />
+            <Row label="代理地址" desc="本地启动 node server/proxy.mjs 后默认 http://localhost:8787">
+              <input
+                value={s.proxyBaseUrl}
+                onChange={(e) => s.setProxyBaseUrl(e.target.value)}
+                placeholder="http://localhost:8787"
+                className="w-56 rounded-lg border border-white/10 bg-ink-900/60 px-3 py-1.5 font-mono text-xs text-ink-100 outline-none focus:border-neon-cyan/50"
+              />
+            </Row>
+            <div className="px-3 py-2 text-xs text-ink-500">
+              <p>
+                启动方式：<code className="rounded bg-white/5 px-1 py-0.5">node server/proxy.mjs</code>
+              </p>
+              <p className="mt-1">
+                生产部署：<code className="rounded bg-white/5 px-1 py-0.5">cd worker &amp;&amp; pnpm run deploy</code>（Cloudflare Worker）
+              </p>
+            </div>
           </Section>
 
           {/* 数据 */}
