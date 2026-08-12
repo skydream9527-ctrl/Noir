@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { ArrowLeft, Search, Star, ExternalLink, Trash2 } from "lucide-react";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
 import { useTabsStore } from "@/store/useTabsStore";
@@ -75,12 +74,10 @@ export default function Favorites() {
           ) : (
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {filtered.map((item, i) => (
-                <motion.div
+                <div
                   key={item.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.03 * i }}
-                  className="group flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] p-3 transition-colors hover:bg-white/5"
+                  className="group flex animate-fade-up items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] p-3 transition-colors hover:bg-white/5"
+                  style={{ animationDelay: `${0.03 * i}s` }}
                 >
                   <img
                     src={getFaviconUrl(item.url)}
@@ -116,7 +113,7 @@ export default function Favorites() {
                   >
                     <Trash2 size={14} />
                   </button>
-                </motion.div>
+                </div>
               ))}
             </div>
           )}

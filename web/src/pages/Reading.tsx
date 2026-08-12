@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
-  Loader2,
   Minus,
   Plus,
   Sun,
@@ -228,12 +226,7 @@ export default function Reading() {
 
         {article && !loading && (
           <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-5 py-10 lg:grid-cols-[1fr_220px]">
-            <motion.article
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mx-auto w-full max-w-2xl"
-            >
+            <article className="mx-auto w-full animate-fade-up max-w-2xl">
               <header className="mb-8 border-b border-white/5 pb-6">
                 <h1 className="font-display text-3xl font-bold leading-tight text-ink-50">
                   {article.title}
@@ -265,7 +258,7 @@ export default function Reading() {
                 }}
                 dangerouslySetInnerHTML={{ __html: renderedContent }}
               />
-            </motion.article>
+            </article>
 
             {/* TOC 侧栏（桌面） */}
             <aside className="hidden lg:block">

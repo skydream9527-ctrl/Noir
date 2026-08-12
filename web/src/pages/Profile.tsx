@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Layers,
@@ -18,6 +17,7 @@ import { useFavoritesStore } from "@/store/useFavoritesStore";
 import { useSettingsStore, type Theme } from "@/store/useSettingsStore";
 import { cn } from "@/lib/utils";
 import BottomNav from "@/components/BottomNav";
+import Logo from "@/components/Logo";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -60,16 +60,9 @@ export default function Profile() {
       <div className="no-scrollbar flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-2xl px-5 py-8">
           {/* 头像 */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center text-center"
-          >
+          <div className="flex animate-scale-in flex-col items-center text-center">
             <div className="relative">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-neon-gradient text-4xl shadow-glow">
-                🖤
-              </div>
+              <Logo size={96} className="rounded-full shadow-glow" />
               <span className="absolute -bottom-1 -right-1 rounded-full border-2 border-ink-950 bg-neon-cyan px-2 py-0.5 text-[10px] font-bold text-ink-950">
                 NOIR
               </span>
@@ -80,19 +73,17 @@ export default function Profile() {
             <p className="mt-1 text-sm text-ink-400">
               匿名访问 · 数据保存在本地
             </p>
-          </motion.div>
+          </div>
 
           {/* 统计 */}
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {stats.map((stat, i) => {
               const Icon = stat.icon;
               return (
-                <motion.div
+                <div
                   key={stat.label}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * i }}
-                  className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-4"
+                  className="relative animate-fade-up overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-4"
+                  style={{ animationDelay: `${0.05 * i}s` }}
                 >
                   <div
                     className="absolute -right-4 -top-4 h-16 w-16 rounded-full opacity-20 blur-2xl"
@@ -105,7 +96,7 @@ export default function Profile() {
                   <div className="mt-0.5 text-xs text-ink-400">
                     {stat.label}
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>

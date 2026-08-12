@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Search,
@@ -22,6 +21,7 @@ import { useTabsStore } from "@/store/useTabsStore";
 import { getRulesCount } from "@/utils/adblock";
 import { cn } from "@/lib/utils";
 import BottomNav from "@/components/BottomNav";
+import Logo from "@/components/Logo";
 
 const themeOptions: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: "dark", label: "深色", icon: Moon },
@@ -180,7 +180,16 @@ export default function Settings() {
 
           {/* 关于 */}
           <Section title="关于" icon={Info}>
-            <div className="space-y-2 px-3 py-3 text-xs text-ink-400">
+            <div className="space-y-3 px-3 py-3 text-xs text-ink-400">
+              <div className="flex items-center gap-3">
+                <Logo size={40} className="rounded-lg" />
+                <div>
+                  <div className="font-display text-sm font-semibold text-ink-100">
+                    Noir Web
+                  </div>
+                  <div className="text-ink-500">暗黑美学多标签浏览器</div>
+                </div>
+              </div>
               <Row label="版本" desc="">
                 <span className="font-mono text-ink-300">v1.0.0-web</span>
               </Row>
@@ -193,14 +202,12 @@ export default function Settings() {
             </div>
           </Section>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="pb-4 text-center text-xs text-ink-600"
+          <p
+            className="animate-fade-in pb-4 text-center text-xs text-ink-600"
+            style={{ animationDelay: "0.3s" }}
           >
             🖤 Noir Web · 暗黑美学
-          </motion.p>
+          </p>
         </div>
       </div>
 

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, ArrowRight, ChevronDown } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 import { ENGINES, getEngineByName } from "@/data/engines";
 import { resolveQueryToUrl } from "@/utils/url";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -124,49 +123,41 @@ export default function SearchBar({
         </button>
       </form>
 
-      <AnimatePresence>
-        {open && (
-          <>
-            <div
-              className="fixed inset-0 z-10"
-              onClick={() => setOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.96 }}
-              transition={{ duration: 0.18 }}
-              className="absolute left-0 right-0 top-full z-20 mt-2 rounded-2xl border border-white/10 bg-ink-900/95 p-2 backdrop-blur-xl shadow-card"
-            >
-              <div className="grid grid-cols-3 gap-1 sm:grid-cols-4">
-                {ENGINES.map((e) => (
-                  <button
-                    key={e.name}
-                    type="button"
-                    onClick={() => pickEngine(e.name)}
-                    className={cn(
-                      "flex items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors",
-                      e.name === engineName
-                        ? "bg-white/10"
-                        : "hover:bg-white/5",
-                    )}
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute left-0 right-0 top-full z-20 mt-2 animate-scale-in rounded-2xl border border-white/10 bg-ink-900/95 p-2 backdrop-blur-xl shadow-card">
+            <div className="grid grid-cols-3 gap-1 sm:grid-cols-4">
+              {ENGINES.map((e) => (
+                <button
+                  key={e.name}
+                  type="button"
+                  onClick={() => pickEngine(e.name)}
+                  className={cn(
+                    "flex items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors",
+                    e.name === engineName
+                      ? "bg-white/10"
+                      : "hover:bg-white/5",
+                  )}
+                >
+                  <span
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                    style={{ background: e.color }}
                   >
-                    <span
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                      style={{ background: e.color }}
-                    >
-                      {e.letter}
-                    </span>
-                    <span className="truncate text-xs text-ink-200">
-                      {e.name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                    {e.letter}
+                  </span>
+                  <span className="truncate text-xs text-ink-200">
+                    {e.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

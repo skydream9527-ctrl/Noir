@@ -3,6 +3,7 @@ import { Sparkles, BookOpen, Settings as SettingsIcon } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import QuickAccess from "@/components/QuickAccess";
 import BottomNav from "@/components/BottomNav";
+import Logo from "@/components/Logo";
 import { useTabsStore } from "@/store/useTabsStore";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { getDomain } from "@/utils/url";
@@ -46,6 +47,7 @@ export default function Home() {
               <Sparkles size={12} className="text-neon-pink" />
               <span>Dark Aesthetics · 暗黑美学</span>
             </div>
+            <Logo size={72} className="mx-auto mb-3 shadow-glow rounded-2xl" />
             <h1 className="font-display text-7xl font-extrabold tracking-tight sm:text-8xl">
               <span className="gradient-text">Noir</span>
               <span className="ml-2 text-ink-50">🖤</span>
@@ -99,7 +101,7 @@ export default function Home() {
               desc="无需登录，所有数据保存在浏览器本地"
               accent="#8b5cf6"
             />
-          </motion.div>
+          </div>
         </div>
       </div>
 

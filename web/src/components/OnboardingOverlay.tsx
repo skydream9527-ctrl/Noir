@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, X } from "lucide-react";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
@@ -87,12 +86,9 @@ export default function OnboardingOverlay() {
         <X size={18} />
       </button>
 
-      <motion.div
+      <div
         key={step}
-        initial={{ opacity: 0, y: 16, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-ink-900/90 p-8 shadow-2xl"
+        className="relative w-full max-w-md animate-scale-in overflow-hidden rounded-3xl border border-white/10 bg-ink-900/90 p-8 shadow-2xl"
       >
         <div
           className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-30 blur-3xl"
@@ -170,7 +166,7 @@ export default function OnboardingOverlay() {
             跳过引导
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -178,18 +174,10 @@ export default function OnboardingOverlay() {
 /** 顶层包装：仅在未完成时渲染引导层。 */
 export function OnboardingGate() {
   const completed = useOnboardingStore((s) => s.completed);
+  if (completed) return null;
   return (
-    <AnimatePresence>
-      {!completed && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <OnboardingOverlay />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="animate-fade-in">
+      <OnboardingOverlay />
+    </div>
   );
 }

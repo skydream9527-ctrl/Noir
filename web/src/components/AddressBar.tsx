@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -276,12 +275,7 @@ export default function AddressBar({
       {/* 加载进度条 */}
       {loading && (
         <div className="relative h-0.5 w-full overflow-hidden bg-transparent">
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: "100%" }}
-            transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-            className="h-full w-1/3 bg-neon-gradient"
-          />
+          <div className="h-full w-1/3 animate-progress-slide bg-neon-gradient" />
         </div>
       )}
 

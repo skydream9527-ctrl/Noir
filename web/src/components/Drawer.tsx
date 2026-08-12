@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Bookmark,
   History,
@@ -67,28 +66,26 @@ export default function Drawer({ open, onClose, onNavigate }: Props) {
   useFocusTrap(asideRef, open);
 
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm"
-            aria-hidden="true"
-          />
-          <motion.aside
-            ref={asideRef}
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 26, stiffness: 240 }}
-            className="fixed right-0 top-0 z-40 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-ink-900/95 backdrop-blur-2xl"
-            role="dialog"
-            aria-modal="true"
-            aria-label="我的库"
-          >
+    <>
+      <div
+        onClick={onClose}
+        className={cn(
+          "fixed inset-0 z-30 bg-black/50 backdrop-blur-sm transition-opacity duration-200",
+          open ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+        aria-hidden="true"
+      />
+      <aside
+        ref={asideRef}
+        className={cn(
+          "fixed right-0 top-0 z-40 flex h-full w-full max-w-md flex-col border-l border-white/10 bg-ink-900/95 backdrop-blur-2xl transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          open ? "translate-x-0" : "translate-x-full",
+        )}
+        role="dialog"
+        aria-modal="true"
+        aria-label="我的库"
+        aria-hidden={!open}
+      >
             {/* 头部 */}
             <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
               <h3 className="font-display text-base font-semibold text-ink-50">
@@ -199,10 +196,8 @@ export default function Drawer({ open, onClose, onNavigate }: Props) {
             <div className="border-t border-white/5 p-3">
               <ClearAllButton panel={panel} />
             </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+      </aside>
+    </>
   );
 }
 

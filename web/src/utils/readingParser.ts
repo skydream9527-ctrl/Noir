@@ -55,7 +55,7 @@ export function parseArticleFromHtml(html: string): ParsedArticle {
   return {
     title,
     content,
-    byline: article?.byline,
+    byline: article?.byline ?? undefined,
     excerpt,
     wordCount,
     readingMinutes,
